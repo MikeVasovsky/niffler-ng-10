@@ -1,8 +1,10 @@
 package guru.qa.niffler.jupiter.extension;
 
 import guru.qa.niffler.jupiter.annotation.Category;
+import guru.qa.niffler.jupiter.annotation.meta.User;
 import guru.qa.niffler.model.CategoryJson;
 import guru.qa.niffler.service.SpendApiClient;
+import guru.qa.niffler.utils.RandomDataUtils;
 import org.junit.jupiter.api.extension.*;
 import org.junit.platform.commons.support.AnnotationSupport;
 
@@ -17,29 +19,23 @@ public class CategoryGenerateExtension implements BeforeEachCallback, ParameterR
     public void beforeEach(ExtensionContext context) throws Exception {
         AnnotationSupport.findAnnotation(
                 context.getRequiredTestMethod(),
-                Category.class
+                User.class
         ).ifPresent(
                 anno -> {
-                    Random random = new Random();
-                    CategoryJson category = new CategoryJson(
-                            null,
-                            "Category_" + random.nextInt(),
-                            anno.username(),
-                            anno.archived()
-                    );
-                    CategoryJson created = spendApiClient.createCategory(category);
-
-                    if (anno.archived()) {
-                        CategoryJson archivedCategory = new CategoryJson(
-                                created.id(),
-                                created.name(),
-                                category.username(),
-                                true
+                    if (anno.categories() != null &&
+                            anno.categories().length > 0) {
+                        CategoryJson category = new CategoryJson(
+                                null,
+                                RandomDataUtils.randomCategoryName(),
+                                anno.username(),
+                                anno.categories()[0].archived()
                         );
+                        CategoryJson created = spendApiClient.createCategory(category);
+
+                        context.getStore(NAMESPACE).put(
+                                context.getUniqueId(),
+                                created);
                     }
-                    context.getStore(NAMESPACE).put(
-                            context.getUniqueId(),
-                            created);
                 }
         );
     }
@@ -55,11 +51,14 @@ public class CategoryGenerateExtension implements BeforeEachCallback, ParameterR
     }
 
     @Override
-    public void afterTestExecution(ExtensionContext context){
+    public void afterTestExecution(ExtensionContext context) {
 
         CategoryJson category = context.getStore(NAMESPACE).
                 get(context.getUniqueId(),
                         CategoryJson.class);
+        if (category == null) {
+            return;
+        }
         if (!category.archived()) {
             CategoryJson update = new CategoryJson(
                     category.id(),

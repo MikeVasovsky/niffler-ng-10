@@ -68,11 +68,13 @@ public class UsersQueueExtension implements
     @Override
     @SuppressWarnings("unchecked")
     public void afterTestExecution(ExtensionContext context) {
-        Map<UserType.Type, StaticUser> map = context.getStore(NAMESPACE)
-                .get(context.getUniqueId(), Map.class);
-        for (Map.Entry<UserType.Type, StaticUser> e : map.entrySet()) {
-            getUserQueueByType(e.getKey()).add(e.getValue());
+        if (context.getRequiredTestMethod().isAnnotationPresent(UserType.class)) {
+            Map<UserType.Type, StaticUser> map = context.getStore(NAMESPACE)
+                    .get(context.getUniqueId(), Map.class);
+            for (Map.Entry<UserType.Type, StaticUser> e : map.entrySet()) {
+                getUserQueueByType(e.getKey()).add(e.getValue());
             }
+        }
         }
 
 

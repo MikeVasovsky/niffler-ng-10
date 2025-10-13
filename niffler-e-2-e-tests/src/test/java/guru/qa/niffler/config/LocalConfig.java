@@ -24,5 +24,11 @@ package guru.qa.niffler.config;
   }
 
   @Override
-  public String gatewayUrl(){return "http://localhost:8090";}
+  public String gatewayUrl(){ return "http://localhost:8090";}
+
+  @Override
+  public String userdataUrl(){ return "http://localhost:8089";}
+
+  @Override
+  public String authUrl(){ return "http://localhost:9000";}
  }
