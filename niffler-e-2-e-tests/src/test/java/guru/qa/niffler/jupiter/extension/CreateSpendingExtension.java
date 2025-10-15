@@ -1,5 +1,6 @@
 package guru.qa.niffler.jupiter.extension;
 
+import guru.qa.niffler.jupiter.annotation.Spending;
 import guru.qa.niffler.jupiter.annotation.meta.User;
 import guru.qa.niffler.model.CategoryJson;
 import guru.qa.niffler.model.SpendJson;
@@ -25,18 +26,19 @@ public class CreateSpendingExtension implements BeforeEachCallback, ParameterRes
                 anno -> {
                     if (anno.spendings() != null &&
                             anno.spendings().length > 0) {
+                        Spending spendAnno = anno.spendings()[0];
                         SpendJson spendJson = new SpendJson(
                                 null,
                                 new Date(),
                                 new CategoryJson(
                                         null,
-                                        RandomDataUtils.randomCategoryName(),
+                                        anno.spendings()[0].category(),
                                         anno.username(),
-                                        anno.categories()[0].archived()
+                                        false
                                 ),
-                                anno.spendings()[0].currency(),
-                                anno.spendings()[0].amount(),
-                                anno.spendings()[0].description(),
+                                spendAnno.currency(),
+                                spendAnno.amount(),
+                                spendAnno.description(),
                                 anno.username()
                         );
                         final SpendJson created = spendClient.createSpend(spendJson);
