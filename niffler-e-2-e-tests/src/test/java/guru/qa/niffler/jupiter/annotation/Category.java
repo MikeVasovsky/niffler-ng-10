@@ -14,8 +14,6 @@ import java.lang.annotation.Target;
 @ExtendWith(CategoryGenerateExtension.class)
 public @interface Category {
 
-    String username();
     boolean archived();
-
 
 }
