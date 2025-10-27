@@ -12,8 +12,6 @@ import guru.qa.niffler.model.SpendJson;
 
 public class SpendDbClient implements SpendClient {
 
-  private static final Config CFG = Config.getInstance();
-
   private final SpendDao spendDao = new SpendDaoJdbc();
   private final CategoryDao categoryDao = new CategoryDaoJdbc();
 
@@ -46,4 +44,6 @@ public class SpendDbClient implements SpendClient {
         )
     );
   }
+
+
 }
