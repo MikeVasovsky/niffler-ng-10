@@ -9,10 +9,10 @@ import java.sql.*;
 import java.util.Optional;
 import java.util.UUID;
 
-public class UsernameDaoJdbc implements UserDao {
+public class UserdataDaoJdbc implements UserDao {
     private static final Config CFG = Config.getInstance();
     private final Connection connection;
-    public UsernameDaoJdbc(Connection connection) {
+    public UserdataDaoJdbc(Connection connection) {
         this.connection = connection;
     }
 
@@ -20,7 +20,7 @@ public class UsernameDaoJdbc implements UserDao {
     @Override
     public UserEntity create(UserEntity user) {
             try (PreparedStatement ps = connection.prepareStatement(
-                    "INSERT INTO \"user\" (username, currency, firstname, surname, photo, photo_small, full_name)" +
+                    "INSERT INTO \"user\" (username, currency, first_name, surname, photo, photo_small, full_name)" +
                             "VALUES ( ?, ?, ?, ?, ?, ?, ?)",
                     Statement.RETURN_GENERATED_KEYS
             )){

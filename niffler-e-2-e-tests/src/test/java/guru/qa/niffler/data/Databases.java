@@ -52,6 +52,29 @@ public class Databases {
     }
   }
 
+  public static <T> T transaction(Function<Connection, T> function, String jdbcUrl) {
+    Connection connection = null;
+    try {
+      connection = connection(jdbcUrl);
+      connection.setAutoCommit(false);
+      connection.setTransactionIsolation(1);
+      T result = function.apply(connection);
+      connection.commit();
+      connection.setAutoCommit(true);
+      return result;
+    } catch (Exception e) {
+      if (connection != null) {
+        try {
+          connection.rollback();
+          connection.setAutoCommit(true);
+        } catch (SQLException ex) {
+          throw new RuntimeException(ex);
+        }
+      }
+      throw new RuntimeException(e);
+    }
+  }
+
   public static <T> T xaTransaction(XaFunction<T>... actions) {
     UserTransaction ut = new UserTransactionImp();
     try {
