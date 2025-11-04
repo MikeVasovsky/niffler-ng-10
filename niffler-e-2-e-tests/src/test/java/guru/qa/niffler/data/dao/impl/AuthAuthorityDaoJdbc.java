@@ -1,8 +1,7 @@
 package guru.qa.niffler.data.dao.impl;
 
-import guru.qa.niffler.data.AuthorityEntity;
 import guru.qa.niffler.data.dao.AuthAuthorityDao;
-import guru.qa.niffler.data.entity.auth.AuthAutorityUserEntity;
+import guru.qa.niffler.data.entity.auth.AuthorityEntity;
 
 import java.sql.Connection;
 import java.sql.PreparedStatement;
@@ -21,7 +20,7 @@ public class AuthAuthorityDaoJdbc implements AuthAuthorityDao {
         try (PreparedStatement ps = connection.prepareStatement(
                 "INSERT INTO \"authority\" (user_id, authority) VALUES (?, ?)",
                 PreparedStatement.RETURN_GENERATED_KEYS)) {
-            for (AuthorityEntity a : authority) {
+            for (guru.qa.niffler.data.entity.auth.AuthorityEntity a : authority) {
                 ps.setObject(1, a.getId());
                 ps.setString(2, a.getAuthority().name());
                 ps.addBatch();
