@@ -1,12 +1,20 @@
 package guru.qa.niffler.data;
 
-import org.postgresql.ds.PGSimpleDataSource;
+import com.atomikos.icatch.jta.UserTransactionImp;
+import com.atomikos.jdbc.AtomikosDataSourceBean;
+import jakarta.transaction.SystemException;
+import jakarta.transaction.UserTransaction;
+import org.apache.commons.lang3.StringUtils;
 
 import javax.sql.DataSource;
 import java.sql.Connection;
 import java.sql.SQLException;
+import java.util.HashMap;
 import java.util.Map;
+import java.util.Properties;
 import java.util.concurrent.ConcurrentHashMap;
+import java.util.function.Consumer;
+import java.util.function.Function;
 
 public class Databases {
     private Databases() {
