@@ -32,13 +32,4 @@ public class AuthAuthorityDaoJdbc implements AuthAuthorityDao {
         }
     }
 
-    @Override
-    public AuthorityEntity create(AuthAutorityUserEntity authAutorityUserEntity) {
-        return null;
-    }
-
-    @Override
-    public AuthorityEntity create(AuthorityEntity authAutorityUserEntity) {
-        return null;
-    }
 }

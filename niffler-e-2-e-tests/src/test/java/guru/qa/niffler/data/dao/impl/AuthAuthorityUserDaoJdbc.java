@@ -17,7 +17,6 @@ public class AuthAuthorityUserDaoJdbc implements AuthAuthorityUserDao {
 
     private static final Config CFG = Config.getInstance();
 
-    private static final PasswordEncoder pe = PasswordEncoderFactories.createDelegatingPasswordEncoder();
 
     public AuthAuthorityUserDaoJdbc(Connection connection) {
         this.connection = connection;
@@ -29,7 +28,7 @@ public class AuthAuthorityUserDaoJdbc implements AuthAuthorityUserDao {
                 "INSERT INTO user (username, password, enabled,account_non_expired, account_non_locked, credential_non_expired) "
                         + "?, ?, ?, ?, ?, ?")) {
             ps.setString(1, authUser.getUsername());
-            ps.setString(2, pe.encode(authUser.getPassword()));
+            ps.setString(2, authUser.getPassword());
             ps.setBoolean(3, authUser.getEnabled());
             ps.setBoolean(4, authUser.getAccountNonExpired());
             ps.setBoolean(5, authUser.getAccountNonLocked());

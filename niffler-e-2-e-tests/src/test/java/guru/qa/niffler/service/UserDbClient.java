@@ -90,12 +90,6 @@ public class UserDbClient {
         return UserJson.fromEntity(userEntity);
     }
 
-//
-//    public void delete(UserJson user) {
-//        UserEntity ue = UserEntity.fromJson(user);
-//        transaction(connection -> new UserdataDaoJdbc(connection).delete(ue),CFG.userdataJdbcUrl());
-//    }
-
     public AuthAutorityUserEntity create(AuthAutorityUserEntity authUser) {
         return transaction(
                 (Function<Connection, AuthAutorityUserEntity>) connection ->
