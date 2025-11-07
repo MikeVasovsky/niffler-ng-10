@@ -1,10 +1,7 @@
 package guru.qa.niffler.data.dao;
 
-import guru.qa.niffler.data.AuthorityEntity;
-import guru.qa.niffler.data.entity.auth.AuthAutorityUserEntity;
+import guru.qa.niffler.data.entity.auth.AuthorityEntity;
 
 public interface AuthAuthorityDao {
-    AuthorityEntity create(AuthAutorityUserEntity authAutorityUserEntity);
-    AuthorityEntity create(AuthorityEntity authAutorityUserEntity);
-
+  void create(AuthorityEntity... authority);
 }
