@@ -60,6 +60,6 @@ public class CategoryDaoSpringJdbc implements CategoryDao {
     public List<CategoryEntity> findAll() {
         JdbcTemplate jdbcTemplate = new JdbcTemplate(dataSource);
         return (jdbcTemplate.query(
-                "SELECY * FROM \"category\"", CategoryEntityRowMapper.instance));
+                "SELECT * FROM \"category\"", CategoryEntityRowMapper.instance));
     }
 }

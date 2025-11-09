@@ -48,7 +48,7 @@ public class AuthAuthorityDaoJdbc implements AuthAuthorityDao {
                 while (rs.next()) {
                     AuthorityEntity ae = new AuthorityEntity();
                     ae.setId(rs.getObject("id", UUID.class));
-                    ae.setAuthority(rs.getObject("Authority", Authority.class));
+                    ae.setAuthority(Authority.valueOf(rs.getString("authority")));
                     ae.setUserId(rs.getObject("user_id", UUID.class));
                     resultList.add(ae);
                 }

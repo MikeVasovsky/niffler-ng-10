@@ -88,10 +88,7 @@ public class UsersDbClient implements UsersClient {
             ),
             new XaFunction<>(
                 con -> {
-                  UserEntity ue = new UserEntity();
-                  ue.setUsername(user.username());
-                  ue.setFullname(user.fullname());
-                  ue.setCurrency(user.currency());
+                  UserEntity ue = UserEntity.fromJson(user);
                   new UserdataUserDaoJdbc(con).create(ue);
                   return ue;
                 },
