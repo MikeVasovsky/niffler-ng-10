@@ -2,8 +2,6 @@ package guru.qa.niffler.data.dao.impl;
 
 import guru.qa.niffler.data.dao.CategoryDao;
 import guru.qa.niffler.data.entity.spend.CategoryEntity;
-import guru.qa.niffler.data.entity.userdata.UserEntity;
-import guru.qa.niffler.model.CurrencyValues;
 
 import java.sql.Connection;
 import java.sql.PreparedStatement;
@@ -75,7 +73,7 @@ public class CategoryDaoJdbc implements CategoryDao {
         }
     }
 
-    @Override
+
     public CategoryEntity update(CategoryEntity categoryEntity) {
         throw new UnsupportedOperationException();
     }
@@ -83,7 +81,7 @@ public class CategoryDaoJdbc implements CategoryDao {
     @Override
     public List<CategoryEntity> findAll() {
         try (PreparedStatement ps = connection.prepareStatement(
-                "SELECT * FROM \"authority\"")) {
+                "SELECT * FROM \"category\"")) {
             ps.execute();
             List<CategoryEntity> resultList = new ArrayList<>();
             try (ResultSet rs = ps.getResultSet()) {

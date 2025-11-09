@@ -20,7 +20,7 @@ public class CategoryEntityRowMapper implements RowMapper<CategoryEntity> {
         result.setId(rs.getObject("id", UUID.class));
         result.setName(rs.getString("name"));
         result.setUsername(rs.getString("username"));
-        result.setArchived(result.isArchived());
+        result.setArchived(rs.getBoolean("archived"));
         return result;
     }
 }

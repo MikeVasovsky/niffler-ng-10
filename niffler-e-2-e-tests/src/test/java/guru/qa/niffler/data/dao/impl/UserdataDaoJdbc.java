@@ -123,6 +123,5 @@ public class UserdataDaoJdbc implements UserDao {
         } catch (SQLException e) {
             throw new RuntimeException(e);
         }
-
     }
 }

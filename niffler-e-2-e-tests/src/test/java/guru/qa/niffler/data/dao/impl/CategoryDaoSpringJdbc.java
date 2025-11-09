@@ -12,52 +12,54 @@ import org.springframework.jdbc.support.KeyHolder;
 import javax.sql.DataSource;
 import java.sql.PreparedStatement;
 import java.sql.Statement;
+import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
 
-public class CategoryDaoJdbc implements CategoryDao {
+public class CategoryDaoSpringJdbc implements CategoryDao {
 
-  private DataSource dataSource;
+    private DataSource dataSource;
 
-  public CategoryDaoJdbc(DataSource dataSource) {
-    this.dataSource = dataSource;
-  }
+    public CategoryDaoSpringJdbc(DataSource dataSource) {
+        this.dataSource = dataSource;
+    }
 
-  @Override
-  public CategoryEntity create(CategoryEntity category) {
-    JdbcTemplate jdbcTemplate = new JdbcTemplate(dataSource);
-    KeyHolder kh = new GeneratedKeyHolder();
-    jdbcTemplate.update(con -> {
-      PreparedStatement ps = con.prepareStatement(
-              "INSERT INTO \"category\" (name, username, archived) " +
-                      "VALUES (?, ?, ?)",
-              Statement.RETURN_GENERATED_KEYS
-    );
-      ps.setString(1,category.getName());
-      ps.setString(2, category.getUsername());
-      ps.setBoolean(3, category.isArchived());
-      return ps;
-  }, kh);
-    final UUID generatedKey = (UUID) kh.getKeys().get("id");
-    category.setId(generatedKey);
-    return category;
-  }
+    @Override
+    public CategoryEntity create(CategoryEntity category) {
+        JdbcTemplate jdbcTemplate = new JdbcTemplate(dataSource);
+        KeyHolder kh = new GeneratedKeyHolder();
+        jdbcTemplate.update(con -> {
+            PreparedStatement ps = con.prepareStatement(
+                    "INSERT INTO \"category\" (name, username, archived) " +
+                            "VALUES (?, ?, ?)",
+                    Statement.RETURN_GENERATED_KEYS
+            );
+            ps.setString(1, category.getName());
+            ps.setString(2, category.getUsername());
+            ps.setBoolean(3, category.isArchived());
+            return ps;
+        }, kh);
+        final UUID generatedKey = (UUID) kh.getKeys().get("id");
+        category.setId(generatedKey);
+        return category;
+    }
 
-  @Override
-  public Optional<CategoryEntity> findCategoryById(UUID id) {
-    JdbcTemplate jdbcTemplate = new JdbcTemplate(dataSource);
-    return Optional.ofNullable(
-            jdbcTemplate.queryForObject(
-                    "SELECT * FROM \"category\" WHERE id = ?",
-                    CategoryEntityRowMapper.instance,
-                    id
-            )
-    );
-  }
+    @Override
+    public Optional<CategoryEntity> findCategoryById(UUID id) {
+        JdbcTemplate jdbcTemplate = new JdbcTemplate(dataSource);
+        return Optional.ofNullable(
+                jdbcTemplate.queryForObject(
+                        "SELECT * FROM \"category\" WHERE id = ?",
+                        CategoryEntityRowMapper.instance,
+                        id
+                )
+        );
+    }
 
-
-  @Override
-  public CategoryEntity update(CategoryEntity categoryEntity) {
-    return null;
-  }
+    @Override
+    public List<CategoryEntity> findAll() {
+        JdbcTemplate jdbcTemplate = new JdbcTemplate(dataSource);
+        return (jdbcTemplate.query(
+                "SELECY * FROM \"category\"", CategoryEntityRowMapper.instance));
+    }
 }
