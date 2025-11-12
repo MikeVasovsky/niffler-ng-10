@@ -8,8 +8,12 @@ import guru.qa.niffler.data.dao.impl.SpendDaoJdbc;
 import guru.qa.niffler.data.entity.spend.CategoryEntity;
 import guru.qa.niffler.data.entity.spend.SpendEntity;
 import guru.qa.niffler.data.tpl.JdbcTransactionTemplate;
+import guru.qa.niffler.data.tpl.XaTransactionTemplate;
 import guru.qa.niffler.model.CategoryJson;
+import guru.qa.niffler.model.CurrencyValues;
 import guru.qa.niffler.model.SpendJson;
+
+import java.util.Date;
 
 public class SpendDbClient implements SpendClient {
 
@@ -20,6 +24,10 @@ public class SpendDbClient implements SpendClient {
 
   private final JdbcTransactionTemplate jdbcTxTemplate = new JdbcTransactionTemplate(
       CFG.spendJdbcUrl()
+  );
+
+  private final XaTransactionTemplate xaTxTemplate =  new XaTransactionTemplate(
+          CFG.spendJdbcUrl()
   );
 
   @Override

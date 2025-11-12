@@ -41,6 +41,7 @@ public class SpendDaoJdbc implements SpendDao {
         }
       }
       spend.setId(generatedKey);
+
       return spend;
     } catch (SQLException e) {
       throw new RuntimeException(e);
