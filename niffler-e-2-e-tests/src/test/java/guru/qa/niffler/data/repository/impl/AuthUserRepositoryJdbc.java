@@ -4,6 +4,7 @@ import guru.qa.niffler.config.Config;
 import guru.qa.niffler.data.entity.auth.AuthUserEntity;
 import guru.qa.niffler.data.entity.auth.Authority;
 import guru.qa.niffler.data.entity.auth.AuthorityEntity;
+import guru.qa.niffler.data.entity.spend.CategoryEntity;
 import guru.qa.niffler.data.mapper.AuthUserEntityRowMapper;
 import guru.qa.niffler.data.repository.AuthUserRepository;
 
@@ -79,6 +80,7 @@ public class AuthUserRepositoryJdbc implements AuthUserRepository {
           }
 
           AuthorityEntity ae = new AuthorityEntity();
+          CategoryEntity ce = new CategoryEntity();
           ae.setUser(user);
           ae.setId(rs.getObject("a.id", UUID.class));
           ae.setAuthority(Authority.valueOf(rs.getString("authority")));
