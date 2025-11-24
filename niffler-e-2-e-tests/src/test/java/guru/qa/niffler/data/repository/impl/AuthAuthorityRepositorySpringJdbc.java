@@ -22,9 +22,7 @@ import java.util.UUID;
 
 public class AuthAuthorityRepositorySpringJdbc implements AuthUserRepository {
 
-  private static final Config CFG = Config.getInstance();
-  private static final String URL = CFG.authJdbcUrl();
-
+  private static final String URL = Config.getInstance().authJdbcUrl();
 
     @Override
     public AuthUserEntity create(AuthUserEntity user) {

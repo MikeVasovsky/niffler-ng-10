@@ -20,15 +20,14 @@ import static guru.qa.niffler.data.tpl.Connections.holder;
 
 public class AuthUserRepositoryJdbc implements AuthUserRepository {
 
-  private static final Config CFG = Config.getInstance();
-  private static final String URL = CFG.authJdbcUrl();
+  private static final String URL = Config.getInstance().authJdbcUrl();
 
   @Override
   public AuthUserEntity create(AuthUserEntity user) {
     try (PreparedStatement userPs = holder(URL).connection().prepareStatement(
         "INSERT INTO \"user\" (username, password, enabled, account_non_expired, account_non_locked, credentials_non_expired) " +
             "VALUES (?, ?, ?, ?, ?, ?)", PreparedStatement.RETURN_GENERATED_KEYS);
-         PreparedStatement authorityPs = holder(CFG.authJdbcUrl()).connection().prepareStatement(
+         PreparedStatement authorityPs = holder(URL).connection().prepareStatement(
              "INSERT INTO \"authority\" (user_id, authority) VALUES (?, ?)")) {
       userPs.setString(1, user.getUsername());
       userPs.setString(2, user.getPassword());

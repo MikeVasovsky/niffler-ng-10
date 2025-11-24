@@ -12,8 +12,7 @@ import java.util.UUID;
 
 public class UserdataFriendshipRepositotySpringJdbc implements UserdataFriendshipRepository {
 
-    private static final Config CFG = Config.getInstance();
-    private static final String URL = CFG.userdataUrl();
+    private static final String URL = Config.getInstance().userdataUrl();
 
 
     @Override

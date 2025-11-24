@@ -19,8 +19,8 @@ import static guru.qa.niffler.data.entity.userdata.FriendshipStatus.PENDING;
 import static guru.qa.niffler.data.tpl.Connections.holder;
 
 public class UserdataUserRepositoryJdbc implements UserdataUserRepository {
-    private static final Config CFG = Config.getInstance();
-    private static final String URL = CFG.userdataJdbcUrl();
+
+    private static final String URL = Config.getInstance().userdataJdbcUrl();
 
     @Override
     public UserEntity create(UserEntity user) {

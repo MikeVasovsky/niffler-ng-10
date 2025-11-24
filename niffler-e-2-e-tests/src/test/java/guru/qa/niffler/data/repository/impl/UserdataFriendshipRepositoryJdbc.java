@@ -17,8 +17,7 @@ import static guru.qa.niffler.data.tpl.Connections.holder;
 
 public class UserdataFriendshipRepositoryJdbc implements UserdataFriendshipRepository {
 
-    private static final Config CFG = Config.getInstance();
-    private static final String URL = CFG.userdataUrl();
+    private static final String URL = Config.getInstance().userdataUrl();
 
     @Override
     public List<FriendshipEntity> getAllFriendshipRequestById(UUID id) {

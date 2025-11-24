@@ -18,9 +18,7 @@ import static guru.qa.niffler.data.tpl.Connections.holder;
 
 public class SpendEntityRepositoryJdbc implements SpendRepository {
 
-    private static final Config CFG = Config.getInstance();
-    private static final String URL = CFG.spendJdbcUrl();
-
+    private static final String URL = Config.getInstance().authJdbcUrl();
 
     @Override
     public SpendEntity create(SpendEntity spend) {

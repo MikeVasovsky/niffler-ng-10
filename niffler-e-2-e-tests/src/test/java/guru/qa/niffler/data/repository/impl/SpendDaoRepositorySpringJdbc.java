@@ -19,8 +19,7 @@ import java.util.UUID;
 
 public class SpendDaoRepositorySpringJdbc implements SpendRepository {
 
-    private static final Config CFG = Config.getInstance();
-    private static final String URL = CFG.spendJdbcUrl();
+    private static final String URL = Config.getInstance().spendJdbcUrl();
 
     @Override
     public SpendEntity create(SpendEntity spend) {

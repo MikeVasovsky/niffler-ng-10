@@ -20,8 +20,7 @@ import static guru.qa.niffler.data.entity.userdata.FriendshipStatus.PENDING;
 
 public class UserdataUserRepositorySpringJdbc implements UserdataUserRepository {
 
-    private static final Config CFG = Config.getInstance();
-    private static final String URL = CFG.userdataUrl();
+    private static final String URL = Config.getInstance().userdataUrl();
 
     @Override
     public UserEntity create(UserEntity user) {
