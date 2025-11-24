@@ -28,7 +28,7 @@ public class SpendEntityRepositoryJdbc implements SpendRepository {
     }
 
     @Override
-    public List<SpendEntity> findSpendsAndCategoriesById(UUID id) {
+    public List<SpendEntity> findByCategoryId (UUID id) {
         try(PreparedStatement ps = holder(URL).connection().prepareStatement(
                 "select * from spend s join category c on s.category_id = c.id where c.id  = ?"
         )) {

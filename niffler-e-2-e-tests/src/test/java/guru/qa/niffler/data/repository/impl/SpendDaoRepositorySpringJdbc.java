@@ -47,24 +47,26 @@ public class SpendDaoRepositorySpringJdbc implements SpendRepository {
     }
 
     @Override
-    public List<SpendEntity> findSpendsAndCategoriesById(UUID categoryId) {
+    public List<SpendEntity> findByCategoryId (UUID categoryId) {
         JdbcTemplate jdbcTemplate = new JdbcTemplate(DataSources.dataSource(URL));
         return jdbcTemplate.query(
-                "select\n" +
-                        "  s.id as s_id,\n" +
-                        "  s.username as s_username,\n" +
-                        "  s.spend_date as s_date,\n" +
-                        "  s.currency as s_currency,\n" +
-                        "  s.amount as s_amount,\n" +
-                        "  s.description as s_desc,\n" +
-                        "  s.category_id as s_catId,\n" +
-                        "  c.id as c_id,\n" +
-                        "  c.name as c_name,\n" +
-                        "  c.username as c_username,\n" +
-                        "  c.archived as c_archived\n" +
-                        "from spend s \n" +
-                        "join category c on s.category_id = c.id\n" +
-                        "where c.id =  ?",
+                """
+                    select
+                      s.id as s_id,
+                      s.username as s_username,
+                      s.spend_date as s_date,
+                      s.currency as s_currency,
+                      s.amount as s_amount,
+                      s.description as s_desc,
+                      s.category_id as s_catId,
+                      c.id as c_id,
+                      c.name as c_name,
+                      c.username as c_username,
+                      c.archived as c_archived
+                    from spend s
+                    join category c on s.category_id = c.id
+                    where c.id = ?
+                    """,
                 SpendEntityResultSetExtractor.instance, categoryId);
     }
 

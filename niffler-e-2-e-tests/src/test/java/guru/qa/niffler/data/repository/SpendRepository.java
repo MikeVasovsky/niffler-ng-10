@@ -8,6 +8,6 @@ import java.util.UUID;
 public interface SpendRepository {
     SpendEntity create(SpendEntity spend);
 
-    List<SpendEntity> findSpendsAndCategoriesById(UUID categoryId);
+    List<SpendEntity> findByCategoryId (UUID categoryId);
 
 }

@@ -21,21 +21,23 @@ public class UserdataFriendshipRepositotySpringJdbc implements UserdataFriendshi
         JdbcTemplate jdbcTemplate = new JdbcTemplate(DataSources.dataSource(URL));
 
         return jdbcTemplate.query(
-                "select " +
-                        "    f.requester_id as requester_id, " +
-                        "    f.addressee_id as addressee_id, " +
-                        "    f.created_date as created_date, " +
-                        "    f.status as status, " +
-                        "    r.id as r_id, " +
-                        "    r.username as r_username, " +
-                        "    r.currency as r_currency, " +
-                        "    a.id as a_id, " +
-                        "    a.username as a_username, " +
-                        "    a.currency as a_currency " +
-                        "from friendship f " +
-                        "join \"user\" r on f.requester_id = r.id " +
-                        "join \"user\" a on f.addressee_id = a.id " +
-                        "where f.requester_id = ?",
+                """
+                        select 
+                        f.requester_id as requester_id,
+                           f.addressee_id as addressee_id, 
+                            f.created_date as created_date, 
+                            f.status as status, 
+                            r.id as r_id,
+                            r.username as r_username,
+                            r.currency as r_currency, 
+                            a.id as a_id, 
+                            a.username as a_username, 
+                            a.currency as a_currency 
+                        from friendship f 
+                        join \"user\" r on f.requester_id = r.id 
+                        join \"user\" a on f.addressee_id = a.id 
+                        where f.requester_id = ?
+                        """,
                 UserdataFriendshipResultSetExtractor.instance,id
         );
     }
