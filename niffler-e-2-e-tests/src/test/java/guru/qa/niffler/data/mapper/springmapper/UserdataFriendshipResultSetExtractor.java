@@ -17,21 +17,30 @@ public class UserdataFriendshipResultSetExtractor implements ResultSetExtractor<
 
     public static final UserdataFriendshipResultSetExtractor instance = new UserdataFriendshipResultSetExtractor();
 
-    private UserdataFriendshipResultSetExtractor(){}
+    private UserdataFriendshipResultSetExtractor() {
+    }
 
     @Override
     public List<FriendshipEntity> extractData(ResultSet rs) throws SQLException, DataAccessException {
         List<FriendshipEntity> friendshipList = new ArrayList<>();
-        while (rs.next()){
+        while (rs.next()) {
             UserEntity requester = new UserEntity();
             requester.setId(rs.getObject("r_id", UUID.class));
             requester.setUsername(rs.getString("r_username"));
             requester.setCurrency(CurrencyValues.valueOf(rs.getString("r_currency")));
+            requester.setFirstname(rs.getString("r_firstname"));
+            requester.setPhoto(rs.getBytes("r_photo"));
+            requester.setPhotoSmall(rs.getBytes("r_photo_small"));
+            requester.setFullname(rs.getString("r_full_name"));
 
             UserEntity addressee = new UserEntity();
             addressee.setId(rs.getObject("a_id", UUID.class));
             addressee.setUsername(rs.getString("a_username"));
             addressee.setCurrency(CurrencyValues.valueOf(rs.getString("a_currency")));
+            addressee.setFirstname(rs.getString("a_firstname"));
+            addressee.setPhoto(rs.getBytes("a_photo"));
+            addressee.setPhotoSmall(rs.getBytes("a_photo_small"));
+            addressee.setFullname(rs.getString("a_full_name"));
 
             FriendshipEntity fe = new FriendshipEntity();
             fe.setRequester(requester);

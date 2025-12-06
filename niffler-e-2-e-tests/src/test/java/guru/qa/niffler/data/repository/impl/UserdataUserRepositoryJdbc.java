@@ -15,6 +15,7 @@ import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
 
+import static guru.qa.niffler.data.entity.userdata.FriendshipStatus.ACCEPTED;
 import static guru.qa.niffler.data.entity.userdata.FriendshipStatus.PENDING;
 import static guru.qa.niffler.data.tpl.Connections.holder;
 
@@ -29,6 +30,11 @@ public class UserdataUserRepositoryJdbc implements UserdataUserRepository {
                 PreparedStatement.RETURN_GENERATED_KEYS)) {
             ps.setString(1, user.getUsername());
             ps.setString(2, user.getCurrency().name());
+            ps.setString(3, user.getFirstname());
+            ps.setString(4, user.getSurname());
+            ps.setBytes(5, user.getPhoto());
+            ps.setBytes(6, user.getPhotoSmall());
+            ps.setString(7, user.getFullname());
             ps.executeUpdate();
             final UUID generatedUserId;
             try (ResultSet rs = ps.getGeneratedKeys()) {
@@ -101,25 +107,23 @@ public class UserdataUserRepositoryJdbc implements UserdataUserRepository {
 
     @Override
     public void addFriend(UserEntity requester, UserEntity addressee) {
-        try (PreparedStatement ps = holder(URL).connection().prepareStatement(
-                "UPDATE  \"friendship\" SET status = ? WHERE requester_id = ? AND addressee_id= ?"
-        )) {
-            ps.setString(1, FriendshipStatus.ACCEPTED.name());
-            ps.setObject(2, requester.getId());
-            ps.setObject(3, addressee.getId());
-            ps.executeUpdate();
+        try (PreparedStatement reqPs = holder(URL).connection().prepareStatement(
+                "INSERT INTO \"friendship\" (requester_id, addressee_id, status) VALUES (?, ?, ?)"
+        );
+        PreparedStatement addPs = holder(URL).connection().prepareStatement(
+                "INSERT INTO \"friendship\" (requester_id, addressee_id, status) VALUES (?, ?, ?)"
+        )){
+            reqPs.setObject(1, requester.getId());
+            reqPs.setObject(2, addressee.getId());
+            reqPs.setObject(3, ACCEPTED.toString());
 
-            for (FriendshipEntity fe : requester.getFriendshipRequests()) {
-                if (fe.getAddressee().getId().equals(addressee.getId())) {
-                    fe.setStatus(FriendshipStatus.ACCEPTED);
-                }
-            }
+            addPs.setObject(1, addressee.getId());
+            addPs.setObject(2, requester.getId());
+            addPs.setObject(3, ACCEPTED.toString());
 
-            for (FriendshipEntity fe : addressee.getFriendshipAddressees()) {
-                if (fe.getRequester().getId().equals(requester.getId())) {
-                    fe.setStatus(FriendshipStatus.ACCEPTED);
-                }
-            }
+            reqPs.execute();
+            addPs.execute();
+            
         } catch (SQLException e) {
             throw new RuntimeException(e);
         }

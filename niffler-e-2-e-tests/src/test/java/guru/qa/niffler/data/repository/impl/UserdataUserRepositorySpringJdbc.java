@@ -16,6 +16,7 @@ import java.sql.Statement;
 import java.util.List;
 import java.util.UUID;
 
+import static guru.qa.niffler.data.entity.userdata.FriendshipStatus.ACCEPTED;
 import static guru.qa.niffler.data.entity.userdata.FriendshipStatus.PENDING;
 
 public class UserdataUserRepositorySpringJdbc implements UserdataUserRepository {
@@ -92,26 +93,22 @@ public class UserdataUserRepositorySpringJdbc implements UserdataUserRepository 
         JdbcTemplate jdbcTemplate = new JdbcTemplate(DataSources.dataSource(URL));
 
         jdbcTemplate.update(con -> {
-            PreparedStatement ps = con.prepareStatement(
-                    "UPDATE \"friendship\" SET status = ? WHERE requester_id = ? AND addressee_id = ?"
+            PreparedStatement reqPs = con.prepareStatement(
+                    "INSERT INTO \"friendship\" (requester_id, addressee_id, status) VALUES (?, ?, ?)"
             );
-            ps.setString(1, FriendshipStatus.ACCEPTED.name());
-            ps.setObject(2, requester.getId());
-            ps.setObject(3, addressee.getId());
-            return ps;
+            reqPs.setObject(1, requester.getId());
+            reqPs.setObject(2, addressee.getId());
+            reqPs.setString(3, ACCEPTED.toString());
+            return reqPs;
         });
-
-
-        for (FriendshipEntity fe : requester.getFriendshipRequests()) {
-            if (fe.getAddressee().getId().equals(addressee.getId())) {
-                fe.setStatus(FriendshipStatus.ACCEPTED);
-            }
-        }
-
-        for (FriendshipEntity fe : addressee.getFriendshipAddressees()) {
-            if (fe.getRequester().getId().equals(requester.getId())) {
-                fe.setStatus(FriendshipStatus.ACCEPTED);
-            }
+        jdbcTemplate.update(con -> {
+            PreparedStatement addPs = con.prepareStatement(
+                    "INSERT INTO \"friendship\" (requester_id, addressee_id, status) VALUES (?, ?, ?)"
+            );
+            addPs.setObject(1, addressee.getId());
+            addPs.setObject(2, requester.getId());
+            addPs.setString(3, ACCEPTED.toString());
+            return addPs;
+        });
         }
     }
-}

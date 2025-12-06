@@ -21,9 +21,9 @@ public class UserdataFriendshipRepositotySpringJdbc implements UserdataFriendshi
 
         return jdbcTemplate.query(
                 """
-                        select 
+                        select * from
                         f.requester_id as requester_id,
-                           f.addressee_id as addressee_id, 
+                            f.addressee_id as addressee_id, 
                             f.created_date as created_date, 
                             f.status as status, 
                             r.id as r_id,
@@ -37,7 +37,7 @@ public class UserdataFriendshipRepositotySpringJdbc implements UserdataFriendshi
                         join \"user\" a on f.addressee_id = a.id 
                         where f.requester_id = ?
                         """,
-                UserdataFriendshipResultSetExtractor.instance,id
+                UserdataFriendshipResultSetExtractor.instance, id
         );
     }
 }

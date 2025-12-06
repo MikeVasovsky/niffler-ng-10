@@ -16,15 +16,22 @@ public class UserdataUserResultSetExtractor implements ResultSetExtractor<List<U
 
     public static final UserdataUserResultSetExtractor instance = new UserdataUserResultSetExtractor();
 
-    private UserdataUserResultSetExtractor(){}
+    private UserdataUserResultSetExtractor() {
+    }
+
     @Override
     public List<UserEntity> extractData(ResultSet rs) throws SQLException, DataAccessException {
         List<UserEntity> userEntityList = new ArrayList<>();
-        while (rs.next()){
+        while (rs.next()) {
             UserEntity user = new UserEntity();
             user.setId(rs.getObject("id", UUID.class));
             user.setUsername(rs.getString("username"));
             user.setCurrency(CurrencyValues.valueOf(rs.getString("currency")));
+            user.setFirstname(rs.getString("firstname"));
+            user.setSurname(rs.getString("surname"));
+            user.setPhoto(rs.getBytes("photo"));
+            user.setPhotoSmall(rs.getBytes("photo_small"));
+            user.setFullname(rs.getString("full_name"));
             userEntityList.add(user);
         }
         return userEntityList;

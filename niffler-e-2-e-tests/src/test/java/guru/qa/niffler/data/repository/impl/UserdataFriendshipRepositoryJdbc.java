@@ -4,6 +4,7 @@ import guru.qa.niffler.config.Config;
 import guru.qa.niffler.data.entity.userdata.FriendshipEntity;
 import guru.qa.niffler.data.entity.userdata.FriendshipStatus;
 import guru.qa.niffler.data.entity.userdata.UserEntity;
+import guru.qa.niffler.data.mapper.UserdataUserEntityRowMapper;
 import guru.qa.niffler.data.repository.UserdataFriendshipRepository;
 
 import java.sql.PreparedStatement;
@@ -28,10 +29,11 @@ public class UserdataFriendshipRepositoryJdbc implements UserdataFriendshipRepos
             ps.execute();
             try (ResultSet rs = ps.getResultSet()) {
                 List<FriendshipEntity> resultFriendship = new ArrayList<>();
+                UserEntity us = null;
                 while (rs.next()) {
-                    UserEntity us = new UserEntity();
-                    us.setId(rs.getObject("id", UUID.class));
-
+                   if (us == null){
+                       us = UserdataUserEntityRowMapper.instance.mapRow(rs,1);
+                   }
                     FriendshipEntity fe = new FriendshipEntity();
                     fe.setRequester(us);
                     UUID addresseeId = rs.getObject("addressee_id", UUID.class);
