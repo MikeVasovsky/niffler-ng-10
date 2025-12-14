@@ -1,4 +1,4 @@
-package guru.qa.niffler.test.fake;
+package guru.qa.niffler.test.db;
 
 import guru.qa.niffler.data.entity.auth.AuthUserEntity;
 import guru.qa.niffler.model.*;
@@ -14,7 +14,7 @@ import java.util.Date;
 import static java.util.UUID.fromString;
 
 
-public class JdbcHibernateTest {
+public class AuthUserHibernateTest {
 
     @Test
     void txTest() {
@@ -43,20 +43,6 @@ public class JdbcHibernateTest {
 
     static AuthDbClient authDbClient = new AuthDbClient();
     static UserdataDbClient userdataDbClient = new UserdataDbClient();
-
-    @ValueSource(strings = {
-            "valentin-1340"
-    })
-    @ParameterizedTest
-    void springJdbcTest(String uname) {
-        UserJson user = userdataDbClient.createUser(
-                uname,
-                "12345"
-        );
-
-        userdataDbClient.addIncomeInvitation(user, 1);
-        userdataDbClient.addOutcomeInvitation(user, 1);
-    }
 
     @ValueSource(strings = {
             "test-create-auser"

@@ -17,9 +17,8 @@ public interface UserdataClient {
 
   UserJson update(UserEntity user);
 
-  void addIncomeInvitation(UserJson targetUser, int count);
+  void sendInvitation(UserJson targetUser, int count);
 
-  void addOutcomeInvitation(UserJson targetUser, int count);
 
   void addFriend(UserJson targetUser, int count);
 
