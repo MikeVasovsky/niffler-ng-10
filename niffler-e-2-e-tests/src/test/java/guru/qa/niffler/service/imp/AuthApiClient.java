@@ -1,4 +1,4 @@
-package guru.qa.niffler.service;
+package guru.qa.niffler.service.imp;
 
 import guru.qa.niffler.api.AuthApi;
 import okhttp3.JavaNetCookieJar;
