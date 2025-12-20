@@ -8,6 +8,7 @@ import guru.qa.niffler.data.entity.userdata.UserEntity;
 import guru.qa.niffler.data.repository.AuthUserRepository;
 import guru.qa.niffler.data.repository.UserdataUserRepository;
 import guru.qa.niffler.data.repository.impl.AuthUserRepositoryHibernate;
+import guru.qa.niffler.data.repository.impl.UserdataRepositorySpringJdbc;
 import guru.qa.niffler.data.repository.impl.UserdataUserRepositoryHibernate;
 import guru.qa.niffler.data.tpl.DataSources;
 import guru.qa.niffler.data.tpl.XaTransactionTemplate;
@@ -32,7 +33,7 @@ public class UserdataDbClient implements UserdataClient {
     private static final PasswordEncoder pe = PasswordEncoderFactories.createDelegatingPasswordEncoder();
 
     private final AuthUserRepository authUserRepository = new AuthUserRepositoryHibernate();
-    private final UserdataUserRepository userdataUserRepository = new UserdataUserRepositoryHibernate();
+    private final UserdataUserRepository userdataUserRepository = new UserdataRepositorySpringJdbc();
 
     private final TransactionTemplate txTemplate = new TransactionTemplate(
             new JdbcTransactionManager(

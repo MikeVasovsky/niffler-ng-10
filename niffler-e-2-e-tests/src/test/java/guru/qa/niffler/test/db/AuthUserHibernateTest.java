@@ -3,46 +3,16 @@ package guru.qa.niffler.test.db;
 import guru.qa.niffler.data.entity.auth.AuthUserEntity;
 import guru.qa.niffler.model.*;
 import guru.qa.niffler.service.imp.AuthDbClient;
-import guru.qa.niffler.service.imp.SpendDbClient;
-import guru.qa.niffler.service.imp.UserdataDbClient;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.ValueSource;
-
-import java.util.Date;
 
 import static java.util.UUID.fromString;
 
 
 public class AuthUserHibernateTest {
 
-    @Test
-    void txTest() {
-        SpendDbClient spendDbClient = new SpendDbClient();
-
-        SpendJson spend = spendDbClient.createSpend(
-                new SpendJson(
-                        null,
-                        new Date(),
-                        new CategoryJson(
-                                null,
-                                "cat-name-tx-3",
-                                "duck",
-                                false
-                        ),
-                        CurrencyValues.RUB,
-                        1000.0,
-                        "spend-name-tx-3",
-                        "duck"
-                )
-        );
-
-        System.out.println(spend);
-    }
-
-
     static AuthDbClient authDbClient = new AuthDbClient();
-    static UserdataDbClient userdataDbClient = new UserdataDbClient();
 
     @ValueSource(strings = {
             "test-create-auser"
@@ -58,7 +28,7 @@ public class AuthUserHibernateTest {
     @Test
     void findByIdTest() {
         AuthUserJson authUserJson = authDbClient
-                .findById(fromString("6e51d1db-a778-42f0-bf61-84f4fb1beb45"));
+                .findById(fromString("99446ce9-b065-498a-8be1-36b5c03efa57"));
         System.out.println(authUserJson);
     }
 
@@ -72,8 +42,8 @@ public class AuthUserHibernateTest {
     @Test
     void updateUserTest() {
         AuthUserEntity authUser = AuthUserEntity.fromJson(new AuthUserJson(
-                fromString("940466a7-7359-4fb4-bf4c-7ebfd36431de"),
-                "test_6.1__teeest",
+                fromString("8eae05c1-2bbd-4c37-9aa3-ed1440223fea"),
+                "test_6.1_jdbc_update_2",
                 "{bcrypt}$2a$10$AMEI7wGkYd2.dq5YJCKsRua7yOj.OINNzVqUx.t07TdTQcgVzwlp2",
                 true,
                 true,
@@ -86,9 +56,9 @@ public class AuthUserHibernateTest {
     @Test
     void deleteUser() {
         AuthUserEntity authUser = AuthUserEntity.fromJson(new AuthUserJson(
-                fromString("4f387bf2-b6b7-45ab-91a7-555c1bad1278"),
-                "marcos.murazik",
-                "$10$xdWWPcWKIBqtlQIc101U1Oiq.sfk9ytfVtpKlRPsvZHXEZ0u4Mxsu",
+                fromString("d54105e1-8e70-4153-b74f-e640c66673d5"),
+                "marianne.glover",
+                "{bcrypt}$2a$10$JRGnkqA572Ut7wEdz3rAke3J7ds50toYSMDbr7iSndJGeB2M95N/y.",
                 true,
                 true,
                 true,

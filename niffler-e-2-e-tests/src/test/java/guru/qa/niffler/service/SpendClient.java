@@ -5,9 +5,9 @@ import guru.qa.niffler.model.SpendJson;
 
 public interface SpendClient {
 
-  SpendJson createSpend(SpendJson spend);
+    SpendJson createSpend(SpendJson spend);
 
-  CategoryJson createCategory(CategoryJson category);
+    CategoryJson createCategory(CategoryJson category);
 
-  CategoryJson updateCategory(CategoryJson category);
+    CategoryJson updateCategory(CategoryJson category);
 }

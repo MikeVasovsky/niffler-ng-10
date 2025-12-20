@@ -9,19 +9,18 @@ import java.util.UUID;
 
 public interface UserdataClient {
 
-  UserJson createUser(String username, String password);
+    UserJson createUser(String username, String password);
 
-  UserJson findById(UUID id);
+    UserJson findById(UUID id);
 
-  UserJson findByUsername(String username);
+    UserJson findByUsername(String username);
 
-  UserJson update(UserEntity user);
+    UserJson update(UserEntity user);
 
-  void sendInvitation(UserJson targetUser, int count);
+    void sendInvitation(UserJson targetUser, int count);
 
+    void addFriend(UserJson targetUser, int count);
 
-  void addFriend(UserJson targetUser, int count);
-
-  void remove(UserEntity user);
+    void remove(UserEntity user);
 
 }

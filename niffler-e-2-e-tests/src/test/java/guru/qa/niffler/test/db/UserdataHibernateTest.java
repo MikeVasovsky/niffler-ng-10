@@ -2,7 +2,6 @@ package guru.qa.niffler.test.db;
 
 import guru.qa.niffler.data.entity.userdata.UserEntity;
 import guru.qa.niffler.model.UserJson;
-import guru.qa.niffler.service.imp.AuthDbClient;
 import guru.qa.niffler.service.imp.UserdataDbClient;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
@@ -14,25 +13,22 @@ import static guru.qa.niffler.model.CurrencyValues.RUB;
 import static java.util.UUID.fromString;
 
 public class UserdataHibernateTest {
-    static AuthDbClient authDbClient = new AuthDbClient();
     static UserdataDbClient userdataDbClient = new UserdataDbClient();
 
     @ValueSource(strings = {
-            "valentin-pppp11"
+            "wow_test_111"
     })
     @ParameterizedTest
     void createUser(String uname) {
-        UserJson user = userdataDbClient.createUser(
+        userdataDbClient.createUser(
                 uname,
                 "12345"
         );
-
-        userdataDbClient.sendInvitation(user, 1);
     }
 
     @ParameterizedTest
     @ValueSource(strings = {
-            "dcad4ff8-b686-4cd6-85cc-b9e3850bc858"
+            "3b123e92-6b72-4038-9369-bc8de64452ed"
     })
     void findUserBuId(UUID uuid) {
         UserJson userJson =
@@ -42,7 +38,7 @@ public class UserdataHibernateTest {
 
     @ParameterizedTest
     @ValueSource(strings = {
-            "valentin-pppp1"
+            "valentin-pppp111"
     })
     void findByUsername(String username) {
         UserJson userJson =
@@ -53,9 +49,9 @@ public class UserdataHibernateTest {
     @Test
     void updateUser() {
         UserEntity user = UserEntity.fromJson(new UserJson(
-                fromString("cffdc150-9c12-4a15-be02-ca6a759a4aa9"),
-                "test_6.1_update",
-                null,
+                fromString("74030e8c-dd78-11f0-94c8-0242ac110002"),
+                "wow_test",
+                "just_a_man",
                 null,
                 null,
                 RUB,
@@ -69,8 +65,8 @@ public class UserdataHibernateTest {
     @Test
     void deleteUser() {
         UserEntity user = UserEntity.fromJson(new UserJson(
-                fromString("71847cfb-6ddd-46a2-8fc5-468cd867c9cb"),
-                "valentin-pppp1",
+                fromString("c1cfdf04-dd79-11f0-9897-0242ac110002"),
+                "wow_test_111",
                 null,
                 null,
                 null,
@@ -85,8 +81,8 @@ public class UserdataHibernateTest {
     @Test
     void addFriend() {
         userdataDbClient.addFriend(new UserJson(
-                fromString("dcad4ff8-b686-4cd6-85cc-b9e3850bc858"),
-                "valentin-1340",
+                fromString("4565362b-bbec-4cfb-b64c-174cffb554e1"),
+                "valentin-pppp111",
                 null,
                 null,
                 null,
@@ -100,8 +96,8 @@ public class UserdataHibernateTest {
     @Test
     void sendInvitation() {
         userdataDbClient.sendInvitation(new UserJson(
-                fromString("7bc2b581-862c-4ea5-a3c9-7bd07bb85a66"),
-                "valentin-pppp11",
+                fromString("f2caa94e-08e8-4c53-b052-2b6b184e9156"),
+                "rayna.hintz",
                 null,
                 null,
                 null,

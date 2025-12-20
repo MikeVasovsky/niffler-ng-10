@@ -24,6 +24,6 @@ public interface SpendRepository {
 
     void remove(SpendEntity spend);
 
-    void removeCategory(CategoryEntity spend);
+    void removeCategory(CategoryEntity category);
 }
 

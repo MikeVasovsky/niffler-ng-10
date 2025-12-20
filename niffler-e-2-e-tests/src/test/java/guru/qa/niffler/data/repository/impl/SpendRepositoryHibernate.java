@@ -3,9 +3,9 @@ package guru.qa.niffler.data.repository.impl;
 import guru.qa.niffler.config.Config;
 import guru.qa.niffler.data.entity.spend.CategoryEntity;
 import guru.qa.niffler.data.entity.spend.SpendEntity;
-import guru.qa.niffler.data.entity.userdata.UserEntity;
 import guru.qa.niffler.data.repository.SpendRepository;
 import jakarta.persistence.EntityManager;
+import jakarta.persistence.NoResultException;
 
 import java.util.Optional;
 import java.util.UUID;
@@ -16,7 +16,7 @@ public class SpendRepositoryHibernate implements SpendRepository {
 
     private static final Config CFG = Config.getInstance();
 
-    private final EntityManager entityManager = em(CFG.userdataJdbcUrl());
+    private final EntityManager entityManager = em(CFG.spendJdbcUrl());
 
 
     @Override
@@ -47,7 +47,17 @@ public class SpendRepositoryHibernate implements SpendRepository {
 
     @Override
     public Optional<CategoryEntity> findCategoryByUsernameAndSpendName(String username, String name) {
-        return Optional.empty();
+        try {
+            return Optional.of(
+                    entityManager.createQuery(
+                                    "SELECT s FROM CategoryEntity  s WHERE s.username = :username AND s.name = :name", CategoryEntity.class)
+                            .setParameter("username", username)
+                            .setParameter("name", name)
+                            .getSingleResult()
+            );
+        } catch (NoResultException e) {
+            return Optional.empty();
+        }
     }
 
     @Override
@@ -59,7 +69,17 @@ public class SpendRepositoryHibernate implements SpendRepository {
 
     @Override
     public Optional<SpendEntity> findByUsernameAndSpendDescription(String username, String description) {
-        return Optional.empty();
+        try {
+            return Optional.of(
+                    entityManager.createQuery(
+                                    "SELECT s FROM SpendEntity s WHERE s.username = :username AND s.description = :description", SpendEntity.class)
+                            .setParameter("username", username)
+                            .setParameter("description", description)
+                            .getSingleResult()
+            );
+        } catch (NoResultException e) {
+            return Optional.empty();
+        }
     }
 
     @Override
