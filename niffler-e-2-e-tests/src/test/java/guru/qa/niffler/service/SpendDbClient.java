@@ -13,7 +13,7 @@ public interface SpendDbClient {
 
     CategoryJson createCategory(CategoryJson category);
 
-    SpendJson updateSpend(SpendEntity spend);
+    SpendJson updateSpend(SpendJson spend);
 
     SpendJson findSpendById(UUID uuid);
 
@@ -23,9 +23,9 @@ public interface SpendDbClient {
 
     CategoryJson findCategoryByUsernameAndSpendName(String username, String name);
 
-    void remove(CategoryEntity category);
+    void remove(CategoryJson category);
 
-    void remove(SpendEntity spend);
+    void remove(SpendJson spend);
 
 
 }

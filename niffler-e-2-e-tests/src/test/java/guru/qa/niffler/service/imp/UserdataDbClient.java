@@ -72,10 +72,12 @@ public class UserdataDbClient implements UserdataClient {
     }
 
     @Override
-    public UserJson update(UserEntity user) {
-        return xaTransactionTemplate.execute(() -> fromEntity(
-                userdataUserRepository.update(user),null
-        ));
+    public UserJson update(UserJson user) {
+        UserEntity us = UserEntity.fromJson(user);
+        UserEntity resEn =  xaTransactionTemplate.execute(() ->
+                userdataUserRepository.update(us)
+        );
+        return UserJson.fromEntity(resEn,null);
     }
 
     @Override
@@ -100,9 +102,10 @@ public class UserdataDbClient implements UserdataClient {
     }
 
     @Override
-    public void remove(UserEntity user) {
+    public void remove(UserJson user) {
+        UserEntity uEn = UserEntity.fromJson(user);
         xaTransactionTemplate.execute(()-> {
-            userdataUserRepository.remove(user);
+            userdataUserRepository.remove(uEn);
             return null;
         });
     }

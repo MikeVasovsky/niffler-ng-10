@@ -10,12 +10,12 @@ public interface AuthClient {
 
     AuthUserJson create(String username, String password);
 
-    AuthUserJson updateUser(AuthUserEntity user);
+    AuthUserJson updateUser(AuthUserJson user);
 
     AuthUserJson findById(UUID id);
 
     AuthUserJson findByUsername(String username);
 
-    void deleteUser(AuthUserEntity user);
+    void deleteUser(AuthUserJson user);
 }
 

@@ -56,20 +56,21 @@ public class SpendHibernateTest {
     @Test
     void updateSpend() {
         SpendEntity spend = SpendEntity.fromJson(new SpendJson(
-                UUID.fromString("d3912906-dc06-11f0-826b-0242ac110002"),
+                UUID.fromString("55cd72ee-dcd9-11f0-bf48-0242ac110002"),
                 new Date(),
                 new CategoryJson(
                         UUID.fromString("55cad6c4-dcd9-11f0-bf48-0242ac110002"),
-                        "updateCategory",
-                        "user_with_friend_create",
+                        "update_user_with_friend_hahaha",
+                        "update_user_with_friend_update",
                         true),
                 CurrencyValues.RUB,
                 12332.0,
-                "update_spend-name-tx-3",
-                "update_user_with_friend__test"
+                "update_user_with_friend_hahaha-name-tx-3",
+                "update_user_with_friend_update"
 
         ));
-        spendDbClient.updateSpend(spend);
+
+        spendDbClient.updateSpend(SpendJson.fromEntity(spend));
     }
 
     @Test
@@ -112,19 +113,19 @@ public class SpendHibernateTest {
     void deleteCategory() {
         CategoryEntity category = CategoryEntity.fromJson(
                 new CategoryJson(
-                        fromString("a754ad9c-adbf-11f0-98fe-0242ac110002"),
+                        fromString("d38fbecc-dc06-11f0-826b-0242ac110002"),
                         "Обучение!",
-                        "mikeVasovsky",
+                        "user_with_friend",
                         false
                 )
         );
-        spendDbClient.remove(category);
+        spendDbClient.remove(CategoryJson.fromEntity(category));
     }
 
     @Test
     void deleteSpend() {
         SpendEntity spend = SpendEntity.fromJson(new SpendJson(
-                UUID.fromString("d38fbecc-dc06-11f0-826b-0242ac110002"),
+                UUID.fromString("d3912906-dc06-11f0-826b-0242ac110002"),
                 new Date(),
                 new CategoryJson(
                         UUID.fromString("d38fbecc-dc06-11f0-826b-0242ac110002"),
@@ -134,9 +135,9 @@ public class SpendHibernateTest {
                 CurrencyValues.RUB,
                 12332.0,
                 "update_spend-name-tx-3",
-                "update_user_with_friend"
+                "update_user_with_friend__test"
 
         ));
-        spendDbClient.remove(spend);
+        spendDbClient.remove(SpendJson.fromEntity(spend));
     }
 }

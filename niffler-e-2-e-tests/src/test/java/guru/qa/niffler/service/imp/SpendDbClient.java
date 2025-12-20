@@ -52,10 +52,12 @@ public class SpendDbClient implements guru.qa.niffler.service.SpendDbClient {
     }
 
     @Override
-    public SpendJson updateSpend(SpendEntity spend) {
-        return xaTransactionTemplate.execute(() -> SpendJson.fromEntity(
-                spendDao.update(spend)
-        ));
+    public SpendJson updateSpend(SpendJson spend) {
+        SpendEntity sp = SpendEntity.fromJson(spend);
+        SpendEntity resultEn =  xaTransactionTemplate.execute(() ->
+                spendDao.update(sp),null
+        );
+        return SpendJson.fromEntity(resultEn);
     }
 
     @Override
@@ -83,17 +85,19 @@ public class SpendDbClient implements guru.qa.niffler.service.SpendDbClient {
     }
 
     @Override
-    public void remove(CategoryEntity category) {
+    public void remove(CategoryJson category) {
+        CategoryEntity ct = CategoryEntity.fromJson(category);
         xaTransactionTemplate.execute(() -> {
-            spendDao.removeCategory(category);
+            spendDao.removeCategory(ct);
             return null;
         });
     }
 
     @Override
-    public void remove(SpendEntity spend) {
+    public void remove(SpendJson spend) {
+        SpendEntity sp = SpendEntity.fromJson(spend);
         xaTransactionTemplate.execute(() -> {
-            spendDao.remove(spend);
+            spendDao.remove(sp);
             return null;
         });
     }

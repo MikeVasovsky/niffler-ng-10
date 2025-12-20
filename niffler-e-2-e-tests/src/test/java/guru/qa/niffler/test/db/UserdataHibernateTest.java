@@ -50,7 +50,7 @@ public class UserdataHibernateTest {
     void updateUser() {
         UserEntity user = UserEntity.fromJson(new UserJson(
                 fromString("74030e8c-dd78-11f0-94c8-0242ac110002"),
-                "wow_test",
+                "wow_test_update",
                 "just_a_man",
                 null,
                 null,
@@ -59,7 +59,7 @@ public class UserdataHibernateTest {
                 null,
                 null
         ));
-        userdataDbClient.update(user);
+        userdataDbClient.update(UserJson.fromEntity(user, null));
     }
 
     @Test
@@ -75,7 +75,7 @@ public class UserdataHibernateTest {
                 null,
                 null
         ));
-        userdataDbClient.remove(user);
+        userdataDbClient.remove(UserJson.fromEntity(user, null));
     }
 
     @Test

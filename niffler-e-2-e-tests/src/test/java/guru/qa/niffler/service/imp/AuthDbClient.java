@@ -54,10 +54,13 @@ public class AuthDbClient implements AuthClient {
     }
 
     @Override
-    public AuthUserJson updateUser(AuthUserEntity user) {
-        return xaTransactionTemplate.execute(() -> fromEntity(
-                authUserRepository.update(user)
-        ));
+    public AuthUserJson updateUser(AuthUserJson user) {
+        AuthUserEntity auEn = AuthUserEntity.fromJson(user);
+
+        AuthUserEntity auEnRes =  xaTransactionTemplate.execute(() ->
+                authUserRepository.update(auEn)
+        );
+        return AuthUserJson.fromEntity(auEnRes);
     }
 
     @Override
@@ -74,9 +77,10 @@ public class AuthDbClient implements AuthClient {
     }
 
     @Override
-    public void deleteUser(AuthUserEntity user) {
+    public void deleteUser(AuthUserJson user) {
+        AuthUserEntity auEn = AuthUserEntity.fromJson(user);
         xaTransactionTemplate.execute(() -> {
-                    authUserRepository.remove(user);
+                    authUserRepository.remove(auEn);
                     return null;
                 }
         );

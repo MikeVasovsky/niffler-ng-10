@@ -50,7 +50,7 @@ public class AuthUserHibernateTest {
                 true,
                 true
         ));
-        authDbClient.updateUser(authUser);
+        authDbClient.updateUser(AuthUserJson.fromEntity(authUser));
     }
 
     @Test
@@ -64,6 +64,6 @@ public class AuthUserHibernateTest {
                 true,
                 true
         ));
-        authDbClient.deleteUser(authUser);
+        authDbClient.deleteUser(AuthUserJson.fromEntity(authUser));
     }
 }

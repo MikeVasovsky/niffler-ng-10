@@ -15,12 +15,12 @@ public interface UserdataClient {
 
     UserJson findByUsername(String username);
 
-    UserJson update(UserEntity user);
+    UserJson update(UserJson user);
 
     void sendInvitation(UserJson targetUser, int count);
 
     void addFriend(UserJson targetUser, int count);
 
-    void remove(UserEntity user);
+    void remove(UserJson user);
 
 }
