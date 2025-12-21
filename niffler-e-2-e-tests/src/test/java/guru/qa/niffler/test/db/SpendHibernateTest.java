@@ -11,9 +11,11 @@ import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.ValueSource;
 
 import java.util.Date;
+import java.util.NoSuchElementException;
 import java.util.UUID;
 
 import static java.util.UUID.fromString;
+import static org.junit.jupiter.api.Assertions.*;
 
 public class SpendHibernateTest {
 
@@ -37,13 +39,13 @@ public class SpendHibernateTest {
                         "update_user_with_friend"
                 )
         );
-
-        System.out.println(spend);
+        assertNotNull(spend);
+        assertEquals("update_user_with_friend", spend.username());
     }
 
     @Test
     void createCategory() {
-        spendDbClient.createCategory(
+        CategoryJson categoryJson = spendDbClient.createCategory(
                 new CategoryJson(
                         null,
                         "создание категории",
@@ -51,6 +53,8 @@ public class SpendHibernateTest {
                         false
                 )
         );
+        assertNotNull(categoryJson);
+        assertEquals("mikeVasovsky", categoryJson.username());
     }
 
     @Test
@@ -60,45 +64,47 @@ public class SpendHibernateTest {
                 new Date(),
                 new CategoryJson(
                         UUID.fromString("55cad6c4-dcd9-11f0-bf48-0242ac110002"),
-                        "update_user_with_friend_hahaha",
+                        "update_user_with_friend_hahaha11",
                         "update_user_with_friend_update",
                         true),
                 CurrencyValues.RUB,
                 12332.0,
-                "update_user_with_friend_hahaha-name-tx-3",
+                "update_user_with_friend_hahaha-name-tx-311",
                 "update_user_with_friend_update"
 
         ));
-
-        spendDbClient.updateSpend(SpendJson.fromEntity(spend));
+        SpendJson oldSpend = spendDbClient.findSpendById(spend.getId());
+        SpendJson newSpend = spendDbClient.updateSpend(SpendJson.fromEntity(spend));
+        assertNotEquals(newSpend, oldSpend);
     }
 
     @Test
     void findSpendByUsernameAndSpendName() {
         String username = "update_user_with_friend";
-        String description = "update_spend-name-tx-3";
+        String description = "someTest";
         SpendJson spend = spendDbClient.findSpendByUsernameAndSpendDescription(username, description);
-        System.out.println(spend);
+        assertEquals("update_user_with_friend", spend.username());
+        assertEquals("someTest", spend.description());
     }
 
     @ParameterizedTest
     @ValueSource(strings = {
-            "d3912906-dc06-11f0-826b-0242ac110002"
+            "19d875f2-de93-11f0-b4a6-0242ac110002"
     })
     void fineSpendById(UUID uuid) {
         SpendJson spendJson = spendDbClient
                 .findSpendById(uuid);
-        System.out.println(spendJson);
+        assertEquals(spendJson.id(), uuid);
     }
 
     @ParameterizedTest
     @ValueSource(strings = {
-            "d38fbecc-dc06-11f0-826b-0242ac110002"
+            "19d6a9ac-de93-11f0-b4a6-0242ac110002"
     })
     void fineCategoryById(UUID uuid) {
-        CategoryJson spendJson = spendDbClient
+        CategoryJson categoryJson = spendDbClient
                 .findCategoryById(uuid);
-        System.out.println(spendJson);
+        assertEquals(categoryJson.id(), uuid);
     }
 
     @Test
@@ -106,7 +112,8 @@ public class SpendHibernateTest {
         String username = "user_with_friend";
         String spendName = "testCreate";
         CategoryJson spend = spendDbClient.findCategoryByUsernameAndSpendName(username, spendName);
-        System.out.println(spend);
+        assertEquals("user_with_friend", spend.username());
+        assertEquals("someTest", spend.name());
     }
 
     @Test
@@ -120,12 +127,17 @@ public class SpendHibernateTest {
                 )
         );
         spendDbClient.remove(CategoryJson.fromEntity(category));
+        try {
+            spendDbClient.findSpendById(category.getId());
+        } catch (NoSuchElementException o) {
+            assertEquals(o.toString(), "java.util.NoSuchElementException: No value present");
+        }
     }
 
     @Test
     void deleteSpend() {
         SpendEntity spend = SpendEntity.fromJson(new SpendJson(
-                UUID.fromString("d3912906-dc06-11f0-826b-0242ac110002"),
+                UUID.fromString("19d875f2-de93-11f0-b4a6-0242ac110002"),
                 new Date(),
                 new CategoryJson(
                         UUID.fromString("d38fbecc-dc06-11f0-826b-0242ac110002"),
@@ -139,5 +151,10 @@ public class SpendHibernateTest {
 
         ));
         spendDbClient.remove(SpendJson.fromEntity(spend));
+        try {
+            spendDbClient.findSpendById(spend.getId());
+        } catch (NoSuchElementException o) {
+            assertEquals(o.toString(), "java.util.NoSuchElementException: No value present");
+        }
     }
 }

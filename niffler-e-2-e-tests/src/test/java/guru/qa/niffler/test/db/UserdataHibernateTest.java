@@ -7,10 +7,12 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.ValueSource;
 
+import java.util.NoSuchElementException;
 import java.util.UUID;
 
 import static guru.qa.niffler.model.CurrencyValues.RUB;
 import static java.util.UUID.fromString;
+import static org.junit.jupiter.api.Assertions.*;
 
 public class UserdataHibernateTest {
     static UserdataDbClient userdataDbClient = new UserdataDbClient();
@@ -20,10 +22,12 @@ public class UserdataHibernateTest {
     })
     @ParameterizedTest
     void createUser(String uname) {
-        userdataDbClient.createUser(
+        UserJson userJson = userdataDbClient.createUser(
                 uname,
                 "12345"
         );
+        assertNotNull(userJson);
+        assertEquals(uname, userJson.username());
     }
 
     @ParameterizedTest
@@ -33,7 +37,7 @@ public class UserdataHibernateTest {
     void findUserBuId(UUID uuid) {
         UserJson userJson =
                 userdataDbClient.findById(uuid);
-        System.out.println(userJson);
+        assertEquals(userJson.id(), uuid);
     }
 
     @ParameterizedTest
@@ -43,7 +47,7 @@ public class UserdataHibernateTest {
     void findByUsername(String username) {
         UserJson userJson =
                 userdataDbClient.findByUsername(username);
-        System.out.println(userJson);
+        assertEquals(userJson.username(), username);
     }
 
     @Test
@@ -59,7 +63,9 @@ public class UserdataHibernateTest {
                 null,
                 null
         ));
-        userdataDbClient.update(UserJson.fromEntity(user, null));
+        UserJson oldUser = userdataDbClient.findById(user.getId());
+        UserJson editUser = userdataDbClient.update(UserJson.fromEntity(user, null));
+        assertNotEquals(oldUser, editUser);
     }
 
     @Test
@@ -76,7 +82,13 @@ public class UserdataHibernateTest {
                 null
         ));
         userdataDbClient.remove(UserJson.fromEntity(user, null));
+        try {
+            userdataDbClient.findById(user.getId());
+        } catch (NoSuchElementException o) {
+            assertEquals(o.toString(), "java.util.NoSuchElementException: No value present");
+        }
     }
+
 
     @Test
     void addFriend() {

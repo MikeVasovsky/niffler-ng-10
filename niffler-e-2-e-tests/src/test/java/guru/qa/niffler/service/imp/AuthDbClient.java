@@ -30,7 +30,7 @@ public class AuthDbClient implements AuthClient {
     private static final Config CFG = Config.getInstance();
     private static final PasswordEncoder pe = PasswordEncoderFactories.createDelegatingPasswordEncoder();
 
-    private final AuthUserRepository authUserRepository = new AuthUserRepositoryJdbc();
+    private final AuthUserRepository authUserRepository = new AuthUserRepositorySpringJdbc();
 
     private final TransactionTemplate txTemplate = new TransactionTemplate(
             new JdbcTransactionManager(

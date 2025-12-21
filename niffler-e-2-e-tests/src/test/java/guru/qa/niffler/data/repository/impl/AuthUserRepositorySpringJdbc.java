@@ -90,7 +90,7 @@ public class AuthUserRepositorySpringJdbc implements AuthUserRepository {
         try {
             return Optional.ofNullable(
                     jdbcTemplate.queryForObject(
-                            "SELECT * FROM \"user\" WHERE id = ?",
+                            "SELECT * FROM \"user\" WHERE username = ?",
                             AuthUserEntityRowMapper.instance,
                             username
                     )

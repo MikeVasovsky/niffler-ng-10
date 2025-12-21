@@ -55,7 +55,7 @@ public class SpendDbClient implements guru.qa.niffler.service.SpendDbClient {
     public SpendJson updateSpend(SpendJson spend) {
         SpendEntity sp = SpendEntity.fromJson(spend);
         SpendEntity resultEn =  xaTransactionTemplate.execute(() ->
-                spendDao.update(sp),null
+                spendDao.update(sp)
         );
         return SpendJson.fromEntity(resultEn);
     }
