@@ -20,10 +20,13 @@ public class UserdataUserDaoJdbc implements UserdataUserDao {
   @Override
   public UserEntity create(UserEntity user) {
     try (PreparedStatement ps = holder(CFG.userdataJdbcUrl()).connection().prepareStatement(
-        "INSERT INTO \"user\" (username, currency) VALUES (?, ?)",
+        "INSERT INTO \"user\" (username, currency, firstname, surname) " +
+                "VALUES (?, ?, ?, ?)",
         PreparedStatement.RETURN_GENERATED_KEYS)) {
       ps.setString(1, user.getUsername());
       ps.setString(2, user.getCurrency().name());
+      ps.setString(3, user.getFirstname());
+      ps.setString(4, user.getSurname());
       ps.executeUpdate();
       final UUID generatedUserId;
       try (ResultSet rs = ps.getGeneratedKeys()) {
