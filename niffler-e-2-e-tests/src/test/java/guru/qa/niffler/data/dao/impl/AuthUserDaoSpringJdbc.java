@@ -63,6 +63,5 @@ public class AuthUserDaoSpringJdbc implements AuthUserDao {
         JdbcTemplate jdbcTemplate = new JdbcTemplate(dataSource);
         return (jdbcTemplate.query("SELECT * FROM \"authority\"",
                 AuthUserEntityRowMapper.instance));
-
     }
 }
