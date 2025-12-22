@@ -1,146 +1,114 @@
 package guru.qa.niffler.jupiter.extension;
 
+import guru.qa.niffler.jupiter.annotation.UserType;
 import io.qameta.allure.Allure;
 import org.apache.commons.lang3.time.StopWatch;
-import org.junit.jupiter.api.extension.AfterTestExecutionCallback;
-import org.junit.jupiter.api.extension.BeforeTestExecutionCallback;
-import org.junit.jupiter.api.extension.ExtensionContext;
-import org.junit.jupiter.api.extension.ParameterContext;
-import org.junit.jupiter.api.extension.ParameterResolutionException;
-import org.junit.jupiter.api.extension.ParameterResolver;
+import org.junit.jupiter.api.extension.*;
 import org.junit.platform.commons.support.AnnotationSupport;
-
-import java.lang.annotation.ElementType;
-import java.lang.annotation.Retention;
-import java.lang.annotation.RetentionPolicy;
-import java.lang.annotation.Target;
-import java.lang.reflect.Parameter;
-import java.util.Date;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.Optional;
-import java.util.Queue;
+import java.util.*;
 import java.util.concurrent.ConcurrentLinkedQueue;
 import java.util.concurrent.TimeUnit;
-import java.util.stream.IntStream;
 
 public class UsersQueueExtension implements
-    BeforeTestExecutionCallback,
-    AfterTestExecutionCallback,
-    ParameterResolver {
+        BeforeTestExecutionCallback,
+        AfterTestExecutionCallback,
+        ParameterResolver {
 
-  public static final ExtensionContext.Namespace NAMESPACE = ExtensionContext.Namespace.create(UsersQueueExtension.class);
+    public static final ExtensionContext.Namespace NAMESPACE = ExtensionContext.Namespace.create(UsersQueueExtension.class);
 
-  public record StaticUser(String username, String password, String friend, String income, String outcome) {
-  }
-
-  private record IndexedUserType(int index, UserType userType) {
-  }
-
-  private static final Queue<StaticUser> EMPTY_USERS = new ConcurrentLinkedQueue<>();
-  private static final Queue<StaticUser> WITH_FRIEND_USERS = new ConcurrentLinkedQueue<>();
-  private static final Queue<StaticUser> WITH_INCOME_REQUEST_USERS = new ConcurrentLinkedQueue<>();
-  private static final Queue<StaticUser> WITH_OUTCOME_REQUEST_USERS = new ConcurrentLinkedQueue<>();
-
-  static {
-    EMPTY_USERS.add(new StaticUser("kilo", "12345", null, null, null));
-    WITH_FRIEND_USERS.add(new StaticUser("duck", "12345", "dima", null, null));
-    WITH_INCOME_REQUEST_USERS.addAll(
-        List.of(
-            new StaticUser("dima", "12345", null, "bee", null),
-            new StaticUser("bill", "12345", null, "barsik", null)
-        )
-    );
-    WITH_OUTCOME_REQUEST_USERS.addAll(
-        List.of(
-            new StaticUser("barsik", "12345", null, null, "bill"),
-            new StaticUser("bee", "12345", null, null, "dima")
-        )
-    );
-  }
-
-  @Target(ElementType.PARAMETER)
-  @Retention(RetentionPolicy.RUNTIME)
-  public @interface UserType {
-    Type value() default Type.EMPTY;
-
-    enum Type {
-      EMPTY, WITH_FRIEND, WITH_INCOME_REQUEST, WITH_OUTCOME_REQUEST
+    public record StaticUser(String username,
+                             String password,
+                             String friend,
+                             String income,
+                             String outcome) {
     }
-  }
 
-  @SuppressWarnings("unchecked")
-  @Override
-  public void beforeTestExecution(ExtensionContext context) {
-    final Parameter[] params = context.getRequiredTestMethod().getParameters();
-    IntStream.range(0, params.length)
-        .filter(i ->
-            AnnotationSupport.isAnnotated(params[i], UserType.class)
-                && params[i].getType().isAssignableFrom(StaticUser.class)
-        )
-        .mapToObj(i -> new IndexedUserType(i, params[i].getAnnotation(UserType.class)))
-        .forEach(iut -> {
-          Optional<StaticUser> user = Optional.empty();
-          StopWatch sw = StopWatch.createStarted();
-          while (user.isEmpty() && sw.getTime(TimeUnit.SECONDS) < 30) {
-            user = switch (iut.userType.value()) {
-              case EMPTY -> Optional.ofNullable(EMPTY_USERS.poll());
-              case WITH_FRIEND -> Optional.ofNullable(WITH_FRIEND_USERS.poll());
-              case WITH_INCOME_REQUEST -> Optional.ofNullable(WITH_INCOME_REQUEST_USERS.poll());
-              case WITH_OUTCOME_REQUEST -> Optional.ofNullable(WITH_OUTCOME_REQUEST_USERS.poll());
-            };
-          }
-          Allure.getLifecycle().updateTestCase(testCase ->
-              testCase.setStart(new Date().getTime())
-          );
-          user.ifPresentOrElse(
-              u ->
-                  ((Map<IndexedUserType, StaticUser>) context.getStore(NAMESPACE).getOrComputeIfAbsent(
-                      context.getUniqueId(),
-                      key -> new HashMap<>()
-                  )).put(iut, u),
-              () -> {
-                throw new IllegalStateException("Can`t obtain user after 30s.");
-              }
-          );
-        });
-  }
+    private static final Queue<StaticUser> EMPTY = new ConcurrentLinkedQueue<>();
+    private static final Queue<StaticUser> WITH_FRIEND = new ConcurrentLinkedQueue<>();
+    private static final Queue<StaticUser> WITH_INCOME_REQUEST = new ConcurrentLinkedQueue<>();
+    private static final Queue<StaticUser> WITH_OUTCOME_REQUEST = new ConcurrentLinkedQueue<>();
 
-  @Override
-  @SuppressWarnings("unchecked")
-  public void afterTestExecution(ExtensionContext context) {
-    Map<IndexedUserType, StaticUser> usersFromTest = context.getStore(NAMESPACE).get(
-        context.getUniqueId(),
-        Map.class
-    );
-    if (usersFromTest != null) {
-      for (Map.Entry<IndexedUserType, StaticUser> e : usersFromTest.entrySet()) {
-        switch (e.getKey().userType.value()) {
-          case EMPTY -> EMPTY_USERS.add(e.getValue());
-          case WITH_FRIEND -> WITH_FRIEND_USERS.add(e.getValue());
-          case WITH_INCOME_REQUEST -> WITH_INCOME_REQUEST_USERS.add(e.getValue());
-          case WITH_OUTCOME_REQUEST -> WITH_OUTCOME_REQUEST_USERS.add(e.getValue());
+    static {
+        EMPTY.add(new StaticUser("emptyFriendsUser", "111","","","" ));
+        WITH_FRIEND.add(new StaticUser("user_with_friend", "111", "empty_user_hm","",""));
+        WITH_INCOME_REQUEST.add(new StaticUser("income_req_user", "111", "", "empty_user_hm", ""));
+        WITH_OUTCOME_REQUEST.add(new StaticUser("outcome_req_user", "111", "","","empty_user_hm"));
+    }
+
+    @Override
+    @SuppressWarnings("unchecked")
+    public void beforeTestExecution(ExtensionContext context) {
+        Arrays.stream(context.getRequiredTestMethod().getParameters())
+                .filter(p -> AnnotationSupport.isAnnotated(p, UserType.class))
+                .map(parameter -> parameter.getAnnotation(UserType.class))
+                .forEach(ut -> {
+                    Optional<StaticUser> user = Optional.empty();
+                    StopWatch sw = StopWatch.createStarted();
+                    while (user.isEmpty() && sw.getTime(TimeUnit.SECONDS) < 30) {
+                        user = Optional.ofNullable(getUserQueueByType(ut.userType()).poll());
+                    }
+                    Allure.getLifecycle().updateTestCase(testCase ->
+                            testCase.setStart(new Date().getTime())
+                    );
+                    user.ifPresentOrElse(
+                            u ->
+                                    ((Map<UserType.Type, StaticUser>) context.getStore(NAMESPACE)
+                                            .getOrComputeIfAbsent(
+                                                    context.getUniqueId(),
+                                                    key -> new HashMap<>()
+                                            )).put(ut.userType(), u)
+                            ,
+                            () -> {
+                                throw new IllegalStateException("Can`t obtain user after 30s.");
+                            }
+                    );
+                });
+    }
+
+    @Override
+    @SuppressWarnings("unchecked")
+    public void afterTestExecution(ExtensionContext context) {
+        if (context.getRequiredTestMethod().isAnnotationPresent(UserType.class)) {
+            Map<UserType.Type, StaticUser> map = context.getStore(NAMESPACE)
+                    .get(context.getUniqueId(), Map.class);
+            for (Map.Entry<UserType.Type, StaticUser> e : map.entrySet()) {
+                getUserQueueByType(e.getKey()).add(e.getValue());
+            }
         }
-      }
+        }
+
+
+    @Override
+    public boolean supportsParameter(ParameterContext parameterContext, ExtensionContext extensionContext) throws ParameterResolutionException {
+        return parameterContext.getParameter().getType().isAssignableFrom(StaticUser.class)
+                && AnnotationSupport.isAnnotated(parameterContext.getParameter(), UserType.class);
     }
-  }
 
-  @Override
-  public boolean supportsParameter(ParameterContext parameterContext, ExtensionContext extensionContext) throws ParameterResolutionException {
-    return parameterContext.getParameter().getType().isAssignableFrom(StaticUser.class)
-        && AnnotationSupport.isAnnotated(parameterContext.getParameter(), UserType.class);
-  }
+    @Override
+    @SuppressWarnings("unchecked")
+    public StaticUser resolveParameter(ParameterContext parameterContext, ExtensionContext extensionContext) throws ParameterResolutionException {
+        HashMap<UserType.Type, StaticUser> usersMap = (HashMap<UserType.Type, StaticUser>) extensionContext
+                .getStore(NAMESPACE)
+                .get(extensionContext.getUniqueId());
+        UserType user = parameterContext.getParameter().getAnnotation(guru.qa.niffler.jupiter.annotation.UserType.class);
+        return usersMap.get(user.userType());
+    }
 
-  @Override
-  @SuppressWarnings("unchecked")
-  public StaticUser resolveParameter(ParameterContext parameterContext, ExtensionContext extensionContext) throws ParameterResolutionException {
-    final Map<IndexedUserType, StaticUser> usersForTest = extensionContext.getStore(NAMESPACE).get(extensionContext.getUniqueId(), Map.class);
-    return usersForTest.get(
-        new IndexedUserType(
-            parameterContext.getIndex(),
-            parameterContext.getParameter().getAnnotation(UserType.class)
-        )
-    );
-  }
+    private Queue<StaticUser> getUserQueueByType(UserType.Type userType) {
+        switch (userType) {
+            case EMPTY -> {
+                return EMPTY;
+            }
+            case WITH_FRIEND -> {
+                return WITH_FRIEND;
+            }
+            case WITH_INCOME_REQUEST -> {
+                return WITH_INCOME_REQUEST;
+            }
+            case WITH_OUTCOME_REQUEST -> {
+                return WITH_OUTCOME_REQUEST;
+            }
+        }
+        return null;
+    }
 }

@@ -25,4 +25,10 @@ public interface Config {
   String currencyJdbcUrl();
 
   String githubUrl();
+
+  String gatewayUrl();
+
+  String userdataUrl();
+
+  String authUrl();
 }

@@ -124,45 +124,45 @@ public class Databases {
 
   public static DataSource dataSource(String jdbcUrl) {
     return dataSources.computeIfAbsent(
-        jdbcUrl,
-        key -> {
-          AtomikosDataSourceBean dsBean = new AtomikosDataSourceBean();
-          final String uniqId = StringUtils.substringAfter(jdbcUrl, "5432/");
-          dsBean.setUniqueResourceName(uniqId);
-          dsBean.setXaDataSourceClassName("org.postgresql.xa.PGXADataSource");
-          Properties props = new Properties();
-          props.put("URL", jdbcUrl);
-          props.put("user", "postgres");
-          props.put("password", "secret");
-          dsBean.setXaProperties(props);
-          dsBean.setMaxPoolSize(10);
-          return dsBean;
-        }
+            jdbcUrl,
+            key -> {
+              AtomikosDataSourceBean dsBean = new AtomikosDataSourceBean();
+              final String uniqId = StringUtils.substringAfter(jdbcUrl, "5432/");
+              dsBean.setUniqueResourceName(uniqId);
+              dsBean.setXaDataSourceClassName("org.postgresql.xa.PGXADataSource");
+              Properties props = new Properties();
+              props.put("URL", jdbcUrl);
+              props.put("user", "postgres");
+              props.put("password", "secret");
+              dsBean.setXaProperties(props);
+              dsBean.setMaxPoolSize(10);
+              return dsBean;
+            }
     );
   }
 
   private static Connection connection(String jdbcUrl) throws SQLException {
     return threadConnections.computeIfAbsent(
-        Thread.currentThread().threadId(),
-        key -> {
-          try {
-            return new HashMap<>(Map.of(
-                jdbcUrl,
-                dataSource(jdbcUrl).getConnection()
-            ));
-          } catch (SQLException e) {
-            throw new RuntimeException(e);
-          }
-        }
+            Thread.currentThread().threadId(),
+            key -> {
+              try {
+                return new HashMap<>(Map.of(
+                        jdbcUrl,
+                        dataSource(jdbcUrl).getConnection()
+                ));
+              } catch (SQLException e) {
+                throw new RuntimeException(e);
+              }
+            }
     ).computeIfAbsent(
-        jdbcUrl,
-        key -> {
-          try {
-            return dataSource(jdbcUrl).getConnection();
-          } catch (SQLException e) {
-            throw new RuntimeException(e);
-          }
-        }
+            jdbcUrl,
+            key -> {
+              try {
+                return dataSource(jdbcUrl).getConnection();
+              } catch (SQLException e) {
+                throw new RuntimeException(e);
+              }
+            }
     );
   }
 
