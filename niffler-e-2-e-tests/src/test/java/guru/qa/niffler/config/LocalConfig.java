@@ -18,10 +18,6 @@ package guru.qa.niffler.config;
    return "jdbc:postgresql://localhost:5432/niffler-auth";
   }
 
-  @Override
-  public String gatewayUrl() {
-   return "http://localhost:8090/";
-  }
 
   @Override
   public String userdataUrl() {
@@ -52,4 +48,8 @@ package guru.qa.niffler.config;
   public String githubUrl() {
    return "https://api.github.com/";
   }
+
+  @Override
+  public String gatewayUrl(){ return "http://localhost:8090";}
+
  }

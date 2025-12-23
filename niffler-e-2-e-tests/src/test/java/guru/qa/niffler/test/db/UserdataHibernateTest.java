@@ -18,7 +18,7 @@ public class UserdataHibernateTest {
     static UserdataDbClient userdataDbClient = new UserdataDbClient();
 
     @ValueSource(strings = {
-            "wow_test_111"
+            "wow_test_11111"
     })
     @ParameterizedTest
     void createUser(String uname) {

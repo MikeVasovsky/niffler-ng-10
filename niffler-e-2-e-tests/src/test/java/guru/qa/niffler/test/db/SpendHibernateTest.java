@@ -29,13 +29,13 @@ public class SpendHibernateTest {
                         new Date(),
                         new CategoryJson(
                                 null,
-                                "someTest",
+                                "someTest11",
                                 "update_user_with_friend",
                                 false
                         ),
                         CurrencyValues.RUB,
                         1000.0,
-                        "someTest",
+                        "someTest11",
                         "update_user_with_friend"
                 )
         );

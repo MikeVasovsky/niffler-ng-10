@@ -25,4 +25,6 @@ public interface Config {
   String currencyJdbcUrl();
 
   String githubUrl();
+
+
 }

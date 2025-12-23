@@ -18,7 +18,7 @@ public class AuthUserHibernateTest {
     static AuthDbClient authDbClient = new AuthDbClient();
 
     @ValueSource(strings = {
-            "test-create-auser22"
+            "test-create-auser2212"
     })
     @ParameterizedTest
     void createAuthUser(String auname) {
