@@ -126,7 +126,12 @@ public class AuthUserRepositoryJdbc implements AuthUserRepository {
     @Override
     public Optional<AuthUserEntity> findByUsername(String username) {
         try (PreparedStatement ps = holder(URL).connection().prepareStatement(
-                "select * from \"user\" u join authority a on u.id = a.user_id where u.username = ?"
+                """
+                                select u.id as user_id, u.username, u.password, u.enabled, 
+                                a.id as authority_id, a.authority 
+                                from "user" u join authority a on u.id = a.user_id 
+                                where u.username = ?
+                        """
         )) {
             ps.setString(1, username);
 
@@ -142,7 +147,7 @@ public class AuthUserRepositoryJdbc implements AuthUserRepository {
 
                     AuthorityEntity ae = new AuthorityEntity();
                     ae.setUser(user);
-                    ae.setId(rs.getObject("a.id", UUID.class));
+                    ae.setId(rs.getObject("authority_id", UUID.class));
                     ae.setAuthority(Authority.valueOf(rs.getString("authority")));
                     authorityEntities.add(ae);
                 }

@@ -1,10 +1,8 @@
 package guru.qa.niffler.data.repository.impl;
 
 import guru.qa.niffler.config.Config;
-import guru.qa.niffler.data.dao.SpendDao;
 import guru.qa.niffler.data.entity.spend.CategoryEntity;
 import guru.qa.niffler.data.entity.spend.SpendEntity;
-import guru.qa.niffler.data.mapper.AuthUserEntityRowMapper;
 import guru.qa.niffler.data.mapper.CategoryEntityRowMapper;
 import guru.qa.niffler.data.mapper.SpendEntityRowMapper;
 import guru.qa.niffler.data.repository.SpendRepository;
@@ -16,11 +14,10 @@ import org.springframework.jdbc.support.KeyHolder;
 
 import java.sql.PreparedStatement;
 import java.sql.Statement;
-import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
 
-public class SpenRepositorySpringJdbc implements SpendRepository {
+public class SpendRepositorySpringJdbc implements SpendRepository {
 
     private static final Config CFG = Config.getInstance();
     private static final String URL = CFG.spendJdbcUrl();
@@ -30,7 +27,8 @@ public class SpenRepositorySpringJdbc implements SpendRepository {
         JdbcTemplate jdbcTemplate = new JdbcTemplate(DataSources.dataSource(URL));
         KeyHolder kh = new GeneratedKeyHolder();
         jdbcTemplate.update(con -> {
-            PreparedStatement ps = con.prepareStatement("INSERT INTO spend (username, spend_date, currency, amount, description, category_id) " + "VALUES ( ?, ?, ?, ?, ?, ?)", Statement.RETURN_GENERATED_KEYS);
+            PreparedStatement ps = con.prepareStatement("INSERT INTO spend (username, spend_date, currency, amount, description, category_id) " +
+                    "VALUES ( ?, ?, ?, ?, ?, ?)", Statement.RETURN_GENERATED_KEYS);
             ps.setString(1, spend.getUsername());
             ps.setDate(2, new java.sql.Date(spend.getSpendDate().getTime()));
             ps.setString(3, spend.getCurrency().name());
@@ -49,7 +47,7 @@ public class SpenRepositorySpringJdbc implements SpendRepository {
     public SpendEntity update(SpendEntity spend) {
         JdbcTemplate jdbcTemplate = new JdbcTemplate(DataSources.dataSource(URL));
         jdbcTemplate.update("""
-                        UPDATE "spend" SET
+                        UPDATE spend SET
                         username = ?,
                         spend_date = ?,
                         currency = ?,
@@ -92,7 +90,7 @@ public class SpenRepositorySpringJdbc implements SpendRepository {
         try {
             return Optional.ofNullable(
                     jdbcTemplate.queryForObject(
-                            "SELECT * FROM \"category\" WHERE id = ?",
+                            "SELECT * FROM category WHERE id = ?",
                             CategoryEntityRowMapper.instance,
                             id
                     )
@@ -103,14 +101,14 @@ public class SpenRepositorySpringJdbc implements SpendRepository {
     }
 
     @Override
-    public Optional<CategoryEntity> findCategoryByUsernameAndSpendName(String username, String name) {
+    public Optional<CategoryEntity> findCategoryByUsernameAndCategoryName(String username, String name) {
         JdbcTemplate jdbcTemplate = new JdbcTemplate(DataSources.dataSource(URL));
         try {
             return Optional.ofNullable(
                     jdbcTemplate.queryForObject(
-                            "SELECT * FROM \"category\" WHERE username = ? AND name = ?",
+                            "SELECT * FROM category WHERE username = ? AND name = ?",
                             CategoryEntityRowMapper.instance,
-                            username,name
+                            username, name
                     )
             );
         } catch (EmptyResultDataAccessException e) {
@@ -124,7 +122,7 @@ public class SpenRepositorySpringJdbc implements SpendRepository {
         try {
             return Optional.ofNullable(
                     jdbcTemplate.queryForObject(
-                            "SELECT * FROM \"spend\" WHERE id = ?",
+                            "SELECT * FROM spend WHERE id = ?",
                             SpendEntityRowMapper.instance,
                             id
                     )
@@ -140,9 +138,9 @@ public class SpenRepositorySpringJdbc implements SpendRepository {
         try {
             return Optional.ofNullable(
                     jdbcTemplate.queryForObject(
-                            "SELECT * FROM \"spend\" WHERE username = ? AND description = ?",
+                            "SELECT * FROM spend WHERE username = ? AND description = ?",
                             SpendEntityRowMapper.instance,
-                            username,description
+                            username, description
                     )
             );
         } catch (EmptyResultDataAccessException e) {
@@ -154,7 +152,7 @@ public class SpenRepositorySpringJdbc implements SpendRepository {
     public void remove(SpendEntity spend) {
         JdbcTemplate jdbcTemplate = new JdbcTemplate(DataSources.dataSource(URL));
         jdbcTemplate.update(
-                "delete from \"spend\" where id = ?",
+                "delete from spend where id = ?",
                 spend.getId()
         );
     }
@@ -163,7 +161,7 @@ public class SpenRepositorySpringJdbc implements SpendRepository {
     public void removeCategory(CategoryEntity category) {
         JdbcTemplate jdbcTemplate = new JdbcTemplate(DataSources.dataSource(URL));
         jdbcTemplate.update(
-                "delete from \"category\" where id = ?",
+                "delete from category where id = ?",
                 category.getId()
         );
     }

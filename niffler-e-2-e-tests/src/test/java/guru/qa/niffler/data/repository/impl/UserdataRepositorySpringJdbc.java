@@ -69,7 +69,7 @@ public class UserdataRepositorySpringJdbc implements UserdataUserRepository {
         try {
             return Optional.ofNullable(
                     jdbcTemplate.queryForObject(
-                            "SELECT * FROM \"user\" WHERE id = ?",
+                            "SELECT * FROM \"user\" WHERE username = ?",
                             UserdataUserEntityRowMapper.instance,
                             username
                     )
@@ -84,16 +84,16 @@ public class UserdataRepositorySpringJdbc implements UserdataUserRepository {
         JdbcTemplate jdbcTemplate = new JdbcTemplate(DataSources.dataSource(URL));
         jdbcTemplate.update(
                 """
-                UPDATE "user" SET
-                username = ?,
-                currency = ?, 
-                firstname = ?,
-                surname = ?,
-                photo = ?,
-                photo_small = ?,
-                full_name = ?
-                WHERE id = ?
-                """,
+                        UPDATE \"user\" SET
+                        username = ?,
+                        currency = ?, 
+                        firstname = ?,
+                        surname = ?,
+                        photo = ?,
+                        photo_small = ?,
+                        full_name = ?
+                        WHERE id = ?
+                        """,
                 user.getUsername(),
                 user.getCurrency().name(),
                 user.getFirstname(),
@@ -117,16 +117,6 @@ public class UserdataRepositorySpringJdbc implements UserdataUserRepository {
             ps.setObject(2, addressee.getId());
             ps.setString(3, PENDING.toString());
             return ps;
-        });
-        jdbcTemplate.update(con -> {
-            PreparedStatement ps2 = con.prepareStatement(
-                    "INSERT INTO \"friendship\" (requester_id, addressee_id, status)" +
-                            "VALUES (?, ?, ?)");
-            ps2.setObject(1, addressee.getId());
-            ps2.setObject(2, requester.getId());
-            ps2.setString(3, PENDING.toString());
-
-            return ps2;
         });
     }
 
@@ -161,8 +151,23 @@ public class UserdataRepositorySpringJdbc implements UserdataUserRepository {
             PreparedStatement ps = con.prepareStatement(
                     "DELETE FROM \"user\" WHERE id = ?"
             );
+
             ps.setObject(1, user.getId());
             return ps;
+        });
+        jdbcTemplate.update(con -> {
+            PreparedStatement reqDel = con.prepareStatement(
+                    "DELETE FROM friendship WHERE requester_id = ?"
+            );
+            reqDel.setObject(1, user.getId());
+            return reqDel;
+        });
+        jdbcTemplate.update(con -> {
+            PreparedStatement addDel = con.prepareStatement(
+                    "DELETE FROM friendship WHERE addressee_id = ?"
+            );
+            addDel.setObject(1, user.getId());
+            return addDel;
         });
     }
 

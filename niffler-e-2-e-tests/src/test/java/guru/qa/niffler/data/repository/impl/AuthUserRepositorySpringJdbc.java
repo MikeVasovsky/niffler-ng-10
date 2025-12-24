@@ -2,6 +2,7 @@ package guru.qa.niffler.data.repository.impl;
 
 import guru.qa.niffler.config.Config;
 import guru.qa.niffler.data.entity.auth.AuthUserEntity;
+import guru.qa.niffler.data.entity.auth.Authority;
 import guru.qa.niffler.data.mapper.AuthUserEntityRowMapper;
 import guru.qa.niffler.data.repository.AuthUserRepository;
 import guru.qa.niffler.data.tpl.DataSources;
@@ -24,6 +25,7 @@ public class AuthUserRepositorySpringJdbc implements AuthUserRepository {
     public AuthUserEntity create(AuthUserEntity user) {
         JdbcTemplate jdbcTemplate = new JdbcTemplate(DataSources.dataSource(URL));
         KeyHolder kh = new GeneratedKeyHolder();
+
         jdbcTemplate.update(con -> {
             PreparedStatement ps = con.prepareStatement(
                     "INSERT INTO \"user\" (username, password, enabled, account_non_expired, account_non_locked, credentials_non_expired) " +
@@ -37,6 +39,28 @@ public class AuthUserRepositorySpringJdbc implements AuthUserRepository {
             ps.setBoolean(5, user.getAccountNonLocked());
             ps.setBoolean(6, user.getCredentialsNonExpired());
             return ps;
+        }, kh);
+
+        jdbcTemplate.update(con -> {
+            PreparedStatement ps2 = con.prepareStatement(
+                    "INSERT INTO authoriry (user_id, authority)" +
+                            "VALUES (?,?)",
+                    PreparedStatement.RETURN_GENERATED_KEYS
+            );
+            ps2.setObject(1, user.getId());
+            ps2.setString(2, Authority.write.name());
+            return ps2;
+        }, kh);
+
+        jdbcTemplate.update(con -> {
+            PreparedStatement ps3 = con.prepareStatement(
+                    "INSERT INTO authoriry (user_id, authority)" +
+                            "VALUES (?,?)",
+                    PreparedStatement.RETURN_GENERATED_KEYS
+            );
+            ps3.setObject(1, user.getId());
+            ps3.setString(2, Authority.read.name());
+            return ps3;
         }, kh);
 
         final UUID generatedKey = (UUID) kh.getKeys().get("id");

@@ -134,20 +134,13 @@ public class UserdataUserRepositoryJdbc implements UserdataUserRepository {
     public void sendInvitation(UserEntity requester, UserEntity addressee) {
         try (PreparedStatement reqPs = holder(URL).connection().prepareStatement(
                 "INSERT INTO \"friendship\" (requester_id, addressee_id, status) VALUES (?, ?, ?)"
-        );
-             PreparedStatement addPs = holder(URL).connection().prepareStatement(
-                     "INSERT INTO \"friendship\" (requester_id, addressee_id, status) VALUES (?, ?, ?)"
-             )) {
+        )
+        ) {
             reqPs.setObject(1, requester.getId());
             reqPs.setObject(2, addressee.getId());
             reqPs.setObject(3, PENDING.toString());
 
-            addPs.setObject(1, addressee.getId());
-            addPs.setObject(2, requester.getId());
-            addPs.setObject(3, PENDING.toString());
-
             reqPs.execute();
-            addPs.execute();
 
         } catch (SQLException e) {
             throw new RuntimeException(e);
@@ -182,9 +175,20 @@ public class UserdataUserRepositoryJdbc implements UserdataUserRepository {
     public void remove(UserEntity user) {
         try (PreparedStatement ps = holder(URL).connection().prepareStatement(
                 "delete from \"user\" where id = ?"
-        )) {
+        );
+             PreparedStatement delReq = holder(URL).connection().prepareStatement(
+                     "delete from friendship where requester_id = ?"
+             );
+             PreparedStatement delAdd = holder(URL).connection().prepareStatement(
+                     "delete from friendship where addressee_id = ?"
+             )) {
             ps.setObject(1, user.getId());
+            delReq.setObject(1, user.getId());
+            delAdd.setObject(1, user.getId());
+
             ps.execute();
+            delReq.execute();
+            delAdd.execute();
         } catch (SQLException e) {
             throw new RuntimeException(e);
         }

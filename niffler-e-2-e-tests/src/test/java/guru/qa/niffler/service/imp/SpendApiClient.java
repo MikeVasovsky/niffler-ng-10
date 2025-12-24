@@ -97,7 +97,7 @@ public class SpendApiClient implements SpendClient {
   }
 
   @Override
-  public PagedModel<SpendJson> getspends(String username, CurrencyValues filterCurrency, Date from, Date to, String searchQuery, Integer page, Integer size, List<String> sort) {
+  public PagedModel<SpendJson> getSpends(String username, CurrencyValues filterCurrency, Date from, Date to, String searchQuery, Integer page, Integer size, List<String> sort) {
     return null;
   }
 

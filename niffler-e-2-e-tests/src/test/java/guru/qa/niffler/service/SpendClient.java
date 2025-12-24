@@ -25,7 +25,7 @@ public interface SpendClient {
 
   Void deleteSpends(String username,List<String> ids);
 
-  PagedModel<SpendJson> getspends(String username,
+  PagedModel<SpendJson> getSpends(String username,
                                   CurrencyValues filterCurrency,
                                   Date from, Date to,
                                   String searchQuery,

@@ -1,6 +1,8 @@
 package guru.qa.niffler.test.db;
 
 import guru.qa.niffler.data.entity.userdata.UserEntity;
+import guru.qa.niffler.jupiter.annotation.NewUser;
+import guru.qa.niffler.model.NewUserModel;
 import guru.qa.niffler.model.UserJson;
 import guru.qa.niffler.service.imp.UserdataDbClient;
 import org.junit.jupiter.api.Test;
@@ -11,6 +13,7 @@ import java.util.NoSuchElementException;
 import java.util.UUID;
 
 import static guru.qa.niffler.model.CurrencyValues.RUB;
+import static guru.qa.niffler.utils.RandomDataUtils.randomUsername;
 import static java.util.UUID.fromString;
 import static org.junit.jupiter.api.Assertions.*;
 
@@ -51,10 +54,12 @@ public class UserdataHibernateTest {
     }
 
     @Test
-    void updateUser() {
-        UserEntity user = UserEntity.fromJson(new UserJson(
-                fromString("74030e8c-dd78-11f0-94c8-0242ac110002"),
-                "wow_test_update",
+    @NewUser
+    void updateUser(NewUserModel user) {
+        UserJson newUser = userdataDbClient.createUser(user.getName(),user.getPassword());
+        UserEntity user1 = UserEntity.fromJson(new UserJson(
+                newUser.id(),
+                randomUsername(),
                 "just_a_man",
                 null,
                 null,
@@ -63,8 +68,8 @@ public class UserdataHibernateTest {
                 null,
                 null
         ));
-        UserJson oldUser = userdataDbClient.findById(user.getId());
-        UserJson editUser = userdataDbClient.update(UserJson.fromEntity(user, null));
+        UserJson oldUser = userdataDbClient.findById(user1.getId());
+        UserJson editUser = userdataDbClient.update(UserJson.fromEntity(user1, null));
         assertNotEquals(oldUser, editUser);
     }
 

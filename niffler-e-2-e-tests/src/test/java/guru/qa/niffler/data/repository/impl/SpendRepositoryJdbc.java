@@ -51,7 +51,7 @@ public class SpendRepositoryJdbc implements SpendRepository {
     public SpendEntity update(SpendEntity spend) {
         try (PreparedStatement ps = holder(URL).connection().prepareStatement(
                 """
-                        update \"spend\" set
+                        update spend set
                         username = ?,
                         spend_date = ?,
                         currency = ?,
@@ -105,13 +105,13 @@ public class SpendRepositoryJdbc implements SpendRepository {
     @Override
     public Optional<CategoryEntity> findCategoryById(UUID id) {
         try (PreparedStatement ps = holder(URL).connection().prepareStatement(
-                "select * from \"category\" where id = ?"
+                "select * from category where id = ?"
         )) {
             ps.setObject(1, id);
             ps.execute();
             try (ResultSet rs = ps.getResultSet()) {
                 CategoryEntity category = new CategoryEntity();
-                while (rs.next()) {
+                if (rs.next()) {
                     category.setId(id);
                     category.setName(rs.getString("name"));
                     category.setUsername(rs.getString("username"));
@@ -129,10 +129,10 @@ public class SpendRepositoryJdbc implements SpendRepository {
     }
 
     @Override
-    public Optional<CategoryEntity> findCategoryByUsernameAndSpendName(String username, String name) {
+    public Optional<CategoryEntity> findCategoryByUsernameAndCategoryName(String username, String name) {
         try (PreparedStatement ps = holder(URL).connection().prepareStatement(
                 """
-                        select * from \"category\" where username = ? and name = ?
+                        select * from category where username = ? and name = ?
                         """
         )) {
             ps.setString(1, username);
@@ -163,11 +163,10 @@ public class SpendRepositoryJdbc implements SpendRepository {
         String sql = """
                 SELECT s.*, c.id as cat_id, c.name as cat_name, 
                        c.username as cat_username, c.archived as cat_archived
-                FROM "spend" s
-                LEFT JOIN "category" c ON s.category_id = c.id
+                FROM spend s
+                LEFT JOIN category c ON s.category_id = c.id
                 WHERE s.id = ?
                 """;
-
         try (PreparedStatement ps = holder(URL).connection().prepareStatement(sql)) {
             ps.setObject(1, id);
 
@@ -204,30 +203,37 @@ public class SpendRepositoryJdbc implements SpendRepository {
     public Optional<SpendEntity> findByUsernameAndSpendDescription(String username, String description) {
         try (PreparedStatement ps = holder(URL).connection().prepareStatement(
                 """
-                        select * from \"spend\" where username = ? and description = ?
+                        SELECT s.*, c.id as cat_id, c.name as cat_name, 
+                               c.username as cat_username, c.archived as cat_archived
+                        FROM spend s
+                        LEFT JOIN category c ON s.category_id = c.id
+                        WHERE s.username = ? AND s.description = ?
                         """
         )) {
             ps.setString(1, username);
             ps.setString(2, description);
-            ps.execute();
 
-            try (ResultSet rs = ps.getResultSet()) {
-                SpendEntity spend = new SpendEntity();
+            try (ResultSet rs = ps.executeQuery()) {
                 if (rs.next()) {
+                    SpendEntity spend = new SpendEntity();
+                    spend.setId(rs.getObject("id", UUID.class));
                     spend.setUsername(rs.getString("username"));
                     spend.setSpendDate(rs.getDate("spend_date"));
                     spend.setCurrency(CurrencyValues.valueOf(rs.getString("currency")));
                     spend.setAmount(rs.getDouble("amount"));
                     spend.setDescription(rs.getString("description"));
 
-                    CategoryEntity category = new CategoryEntity();
-                    category.setId(rs.getObject("category_id", UUID.class));
-                    spend.setCategory(category);
-                }
-                if (spend == null) {
-                    return Optional.empty();
-                } else {
+                    if (rs.getObject("cat_id") != null) {
+                        CategoryEntity category = new CategoryEntity();
+                        category.setId(rs.getObject("cat_id", UUID.class));
+                        category.setName(rs.getString("cat_name"));
+                        category.setUsername(rs.getString("cat_username"));
+                        category.setArchived(rs.getBoolean("cat_archived"));
+                        spend.setCategory(category);
+                    }
                     return Optional.of(spend);
+                } else {
+                    return Optional.empty();
                 }
             }
         } catch (SQLException e) {
@@ -238,7 +244,7 @@ public class SpendRepositoryJdbc implements SpendRepository {
     @Override
     public void remove(SpendEntity spend) {
         try (PreparedStatement ps = holder(URL).connection().prepareStatement(
-                "delete from \"spend\" where id = ?"
+                "delete from spend where id = ?"
         )) {
             ps.setObject(1, spend.getId());
             ps.executeUpdate();
@@ -250,7 +256,7 @@ public class SpendRepositoryJdbc implements SpendRepository {
     @Override
     public void removeCategory(CategoryEntity category) {
         try (PreparedStatement ps = holder(URL).connection().prepareStatement(
-                "delete from \"category\" where id = ?"
+                "delete from category where id = ?"
         )) {
             ps.setObject(1, category.getId());
             ps.executeUpdate();

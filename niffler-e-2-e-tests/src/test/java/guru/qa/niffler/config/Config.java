@@ -26,5 +26,4 @@ public interface Config {
 
   String githubUrl();
 
-
 }

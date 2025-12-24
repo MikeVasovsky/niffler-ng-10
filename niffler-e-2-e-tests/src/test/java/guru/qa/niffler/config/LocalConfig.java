@@ -18,7 +18,6 @@ package guru.qa.niffler.config;
    return "jdbc:postgresql://localhost:5432/niffler-auth";
   }
 
-
   @Override
   public String userdataUrl() {
    return "http://localhost:8089/";
