@@ -14,6 +14,7 @@ import org.springframework.jdbc.support.KeyHolder;
 
 import java.sql.PreparedStatement;
 import java.sql.Statement;
+import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
 
@@ -65,6 +66,29 @@ public class SpendRepositorySpringJdbc implements SpendRepository {
                 spend.getId()
         );
         return spend;
+    }
+
+    @Override
+    public CategoryEntity update(CategoryEntity category) {
+        JdbcTemplate jdbcTemplate = new JdbcTemplate(DataSources.dataSource(URL));
+        KeyHolder kh = new GeneratedKeyHolder();
+        jdbcTemplate.update(con -> {
+            PreparedStatement ps = con.prepareStatement(
+                    """
+                          INSERT INTO "category" (username, name, archived)
+                          VALUES (?, ?, ?)
+                        """,
+                    Statement.RETURN_GENERATED_KEYS
+            );
+            ps.setString(1, category.getUsername());
+            ps.setString(2, category.getName());
+            ps.setBoolean(3, category.isArchived());
+            return ps;
+        }, kh);
+
+        final UUID generatedKey = (UUID) kh.getKeys().get("id");
+        category.setId(generatedKey);
+        return category;
     }
 
     @Override
@@ -163,6 +187,17 @@ public class SpendRepositorySpringJdbc implements SpendRepository {
         jdbcTemplate.update(
                 "delete from category where id = ?",
                 category.getId()
+        );
+    }
+
+    @Override
+    public List<CategoryEntity> allCategories(String username) {
+        final JdbcTemplate jdbcTemplate = new JdbcTemplate(DataSources.dataSource(URL));
+        return jdbcTemplate.query(
+                """
+                      SELECT * FROM "category"
+                    """,
+                CategoryEntityRowMapper.instance
         );
     }
 }

@@ -19,15 +19,17 @@ import static org.junit.jupiter.api.Assertions.*;
 
 public class UserdataHibernateTest {
     static UserdataDbClient userdataDbClient = new UserdataDbClient();
+    private final String password = "12345";
 
     @ValueSource(strings = {
-            "wow_test_11111"
+            "wow_test_11111",
+            "user_1+friendship"
     })
     @ParameterizedTest
     void createUser(String uname) {
         UserJson userJson = userdataDbClient.createUser(
                 uname,
-                "12345"
+                password
         );
         assertNotNull(userJson);
         assertEquals(uname, userJson.username());
@@ -35,7 +37,8 @@ public class UserdataHibernateTest {
 
     @ParameterizedTest
     @ValueSource(strings = {
-            "3b123e92-6b72-4038-9369-bc8de64452ed"
+            "3b123e92-6b72-4038-9369-bc8de64452ed",
+            "fd643de8-e527-4c60-a956-0b773c12ed99"
     })
     void findUserBuId(UUID uuid) {
         UserJson userJson =
@@ -45,7 +48,8 @@ public class UserdataHibernateTest {
 
     @ParameterizedTest
     @ValueSource(strings = {
-            "valentin-pppp111"
+            "valentin-pppp111",
+            "user_2_friendship"
     })
     void findByUsername(String username) {
         UserJson userJson =

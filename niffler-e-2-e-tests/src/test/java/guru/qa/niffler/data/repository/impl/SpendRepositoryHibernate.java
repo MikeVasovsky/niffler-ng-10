@@ -7,6 +7,7 @@ import guru.qa.niffler.data.repository.SpendRepository;
 import jakarta.persistence.EntityManager;
 import jakarta.persistence.NoResultException;
 
+import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
 
@@ -29,6 +30,11 @@ public class SpendRepositoryHibernate implements SpendRepository {
     @Override
     public SpendEntity update(SpendEntity spend) {
         return entityManager.merge(spend);
+    }
+
+    @Override
+    public CategoryEntity update(CategoryEntity category) {
+        return entityManager.merge(category);
     }
 
     @Override
@@ -94,5 +100,15 @@ public class SpendRepositoryHibernate implements SpendRepository {
         CategoryEntity findCategory = entityManager
                 .find(CategoryEntity.class, spend.getId());
         entityManager.remove(findCategory);
+    }
+
+    @Override
+    public List<CategoryEntity> allCategories(String username) {
+        return entityManager.createQuery(
+                        "select c from CategoryEntity c where c.username =: username",
+                        CategoryEntity.class
+                )
+                .setParameter("username", username)
+                .getResultList();
     }
 }

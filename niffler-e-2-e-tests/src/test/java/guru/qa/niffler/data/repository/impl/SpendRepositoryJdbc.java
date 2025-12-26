@@ -7,6 +7,8 @@ import guru.qa.niffler.data.repository.SpendRepository;
 import guru.qa.niffler.model.CurrencyValues;
 
 import java.sql.*;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
 
@@ -70,6 +72,31 @@ public class SpendRepositoryJdbc implements SpendRepository {
             ps.executeUpdate();
 
             return spend;
+        } catch (SQLException e) {
+            throw new RuntimeException(e);
+        }
+    }
+
+    @Override
+    public CategoryEntity update(CategoryEntity category) {
+        try (PreparedStatement ps = holder(URL).connection().prepareStatement(
+                """
+                        update category set
+                        username = ?,
+                        spend_date = ?,
+                        currency = ?,
+                        amount = ?,
+                        description = ?
+                        where id = ?
+                        """
+        )) {
+            ps.setString(1, category.getName());
+            ps.setString(2, category.getUsername());
+            ps.setBoolean(3, category.isArchived());
+
+            ps.executeUpdate();
+
+            return category;
         } catch (SQLException e) {
             throw new RuntimeException(e);
         }
@@ -260,6 +287,29 @@ public class SpendRepositoryJdbc implements SpendRepository {
         )) {
             ps.setObject(1, category.getId());
             ps.executeUpdate();
+        } catch (SQLException e) {
+            throw new RuntimeException(e);
+        }
+    }
+
+    @Override
+    public List<CategoryEntity> allCategories(String username) {
+        try (PreparedStatement ps = holder(URL).connection().prepareStatement(
+                "SELECT * FROM category")) {
+            ps.execute();
+
+            try (ResultSet rs = ps.getResultSet()) {
+                List<CategoryEntity> res = new ArrayList<>();
+                while (rs.next()) {
+                    CategoryEntity category = new CategoryEntity();
+                    category.setId(rs.getObject("id", UUID.class));
+                    category.setName(rs.getString("name"));
+                    category.setUsername(rs.getString("username"));
+                    category.setArchived(rs.getBoolean("archived"));
+                    res.add(category);
+                }
+               return res;
+            }
         } catch (SQLException e) {
             throw new RuntimeException(e);
         }

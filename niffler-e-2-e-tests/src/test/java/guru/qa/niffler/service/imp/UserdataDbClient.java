@@ -34,6 +34,7 @@ public class UserdataDbClient implements UserdataClient {
 
     private final AuthUserRepository authUserRepository = new AuthUserRepositoryHibernate();
     private final UserdataUserRepository userdataUserRepository = new UserdataRepositorySpringJdbc();
+    private final String password = "12345";
 
     private final TransactionTemplate txTemplate = new TransactionTemplate(
             new JdbcTransactionManager(
@@ -90,7 +91,7 @@ public class UserdataDbClient implements UserdataClient {
             for (int i = 0; i < count; i++) {
                 xaTransactionTemplate.execute(() -> {
                             String username = randomUsername();
-                            AuthUserEntity authUser = authUserEntity(username, "12345");
+                            AuthUserEntity authUser = authUserEntity(username, password);
                             authUserRepository.create(authUser);
                             UserEntity adressee = userdataUserRepository.create(userEntity(username));
                             userdataUserRepository.sendInvitation(targetEntity, adressee);
@@ -121,7 +122,7 @@ public class UserdataDbClient implements UserdataClient {
             for (int i = 0; i < count; i++) {
                 xaTransactionTemplate.execute(() -> {
                             String username = randomUsername();
-                            AuthUserEntity authUser = authUserEntity(username, "12345");
+                            AuthUserEntity authUser = authUserEntity(username, password);
                             authUserRepository.create(authUser);
                             UserEntity adressee = userdataUserRepository.create(userEntity(username));
                             userdataUserRepository.addFriend(targetEntity, adressee);

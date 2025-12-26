@@ -18,7 +18,8 @@ public class AuthUserHibernateTest {
     static AuthDbClient authDbClient = new AuthDbClient();
 
     @ValueSource(strings = {
-            "test-create-auser2212"
+            "test-create-auser2212",
+            "test-create-auser2213"
     })
     @ParameterizedTest
     void createAuthUser(String auname) {
@@ -38,7 +39,8 @@ public class AuthUserHibernateTest {
     }
 
     @ValueSource(strings = {
-            "marcell.collins"
+            "marcell.collins",
+            "mikeVasovsky"
     })
     @ParameterizedTest
     void findByUsername(String username) {
