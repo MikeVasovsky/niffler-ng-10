@@ -22,7 +22,6 @@ import org.springframework.transaction.support.TransactionTemplate;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
-import java.util.UUID;
 
 import static guru.qa.niffler.utils.RandomDataUtils.randomUsername;
 
@@ -46,12 +45,7 @@ public class UsersDbClient implements UsersClient {
       CFG.userdataJdbcUrl()
   );
 
-    @Override
-    public UserJson currentUser(String username) {
-        return null;
-    }
-
-    @Override
+  @Override
   public UserJson createUser(String username, String password) {
     return xaTransactionTemplate.execute(() -> {
           AuthUserEntity authUser = authUserEntity(username, password);
@@ -136,47 +130,7 @@ public class UsersDbClient implements UsersClient {
     return result;
   }
 
-    @Override
-    public UserJson findById(UUID id) {
-        return null;
-    }
-
-    @Override
-    public List<UserJson> findAllUsers(String username, String searchQuery) {
-        return List.of();
-    }
-
-    @Override
-    public UserJson findByUsername(String username) {
-        return null;
-    }
-
-    @Override
-    public UserJson update(UserJson user) {
-        return null;
-    }
-
-    @Override
-    public void sendInvitation(UserJson targetUser, int count) {
-
-    }
-
-    @Override
-    public UserJson sendInvitation(String username, String targetUser) {
-        return null;
-    }
-
-    @Override
-    public UserJson acceptInvitation(String username, String targetUser) {
-        return null;
-    }
-
-    @Override
-    public void remove(UserJson user) {
-
-    }
-
-    private UserEntity userEntity(String username) {
+  private UserEntity userEntity(String username) {
     UserEntity ue = new UserEntity();
     ue.setUsername(username);
     ue.setCurrency(CurrencyValues.RUB);
