@@ -71,23 +71,23 @@ public class SpendRepositorySpringJdbc implements SpendRepository {
     @Override
     public CategoryEntity update(CategoryEntity category) {
         JdbcTemplate jdbcTemplate = new JdbcTemplate(DataSources.dataSource(URL));
-        KeyHolder kh = new GeneratedKeyHolder();
         jdbcTemplate.update(con -> {
             PreparedStatement ps = con.prepareStatement(
                     """
-                          INSERT INTO "category" (username, name, archived)
-                          VALUES (?, ?, ?)
-                        """,
-                    Statement.RETURN_GENERATED_KEYS
+                          UPDATE category set username =?,
+                          name = ?,
+                          archived = ?
+                          WHERE id = ?
+                        """
             );
             ps.setString(1, category.getUsername());
             ps.setString(2, category.getName());
             ps.setBoolean(3, category.isArchived());
+            ps.setObject(4,category.getId()
+            );
             return ps;
-        }, kh);
-
-        final UUID generatedKey = (UUID) kh.getKeys().get("id");
-        category.setId(generatedKey);
+        }
+        );
         return category;
     }
 

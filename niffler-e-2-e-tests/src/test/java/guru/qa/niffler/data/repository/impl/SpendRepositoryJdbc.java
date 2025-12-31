@@ -82,11 +82,8 @@ public class SpendRepositoryJdbc implements SpendRepository {
         try (PreparedStatement ps = holder(URL).connection().prepareStatement(
                 """
                         update category set
-                        username = ?,
-                        spend_date = ?,
-                        currency = ?,
-                        amount = ?,
-                        description = ?
+                        name = ?,
+                        username = ?
                         where id = ?
                         """
         )) {

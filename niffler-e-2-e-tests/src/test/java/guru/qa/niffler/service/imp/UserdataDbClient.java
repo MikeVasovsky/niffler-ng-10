@@ -83,23 +83,22 @@ public class UserdataDbClient implements UserdataClient {
 
     @Override
     public void sendInvitation(UserJson targetUser, int count) {
-        if (count > 0) {
-            UserEntity targetEntity = userdataUserRepository.findById(
-                    targetUser.id()
-            ).orElseThrow();
+        xaTransactionTemplate.execute(() -> {
+            if (count > 0) {
+                UserEntity targetEntity = userdataUserRepository.findById(
+                        targetUser.id()
+                ).orElseThrow();
 
-            for (int i = 0; i < count; i++) {
-                xaTransactionTemplate.execute(() -> {
-                            String username = randomUsername();
-                            AuthUserEntity authUser = authUserEntity(username, password);
-                            authUserRepository.create(authUser);
-                            UserEntity adressee = userdataUserRepository.create(userEntity(username));
-                            userdataUserRepository.sendInvitation(targetEntity, adressee);
-                            return null;
-                        }
-                );
+                for (int i = 0; i < count; i++) {
+                    String username = randomUsername();
+                    AuthUserEntity authUser = authUserEntity(username, password);
+                    authUserRepository.create(authUser);
+                    UserEntity adressee = userdataUserRepository.create(userEntity(username));
+                    userdataUserRepository.sendInvitation(targetEntity, adressee);
+                }
             }
-        }
+            return null;
+        });
     }
 
     @Override
@@ -114,24 +113,24 @@ public class UserdataDbClient implements UserdataClient {
 
     @Override
     public void addFriend(UserJson targetUser, int count) {
-        if (count > 0) {
-            UserEntity targetEntity = userdataUserRepository.findById(
-                    targetUser.id()
-            ).orElseThrow();
+        xaTransactionTemplate.execute(() -> {
+            if (count > 0) {
+                UserEntity targetEntity = userdataUserRepository.findById(
+                        targetUser.id()
+                ).orElseThrow();
 
-            for (int i = 0; i < count; i++) {
-                xaTransactionTemplate.execute(() -> {
-                            String username = randomUsername();
-                            AuthUserEntity authUser = authUserEntity(username, password);
-                            authUserRepository.create(authUser);
-                            UserEntity adressee = userdataUserRepository.create(userEntity(username));
-                            userdataUserRepository.addFriend(targetEntity, adressee);
-                            return null;
-                        }
-                );
+                for (int i = 0; i < count; i++) {
+                    String username = randomUsername();
+                    AuthUserEntity authUser = authUserEntity(username, password);
+                    authUserRepository.create(authUser);
+                    UserEntity adressee = userdataUserRepository.create(userEntity(username));
+                    userdataUserRepository.addFriend(targetEntity, adressee);
+                }
             }
-        }
+            return null;
+        });
     }
+
 
     private UserEntity userEntity(String username) {
         UserEntity ue = new UserEntity();
