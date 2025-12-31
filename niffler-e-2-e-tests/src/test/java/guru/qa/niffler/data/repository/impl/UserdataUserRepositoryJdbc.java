@@ -1,8 +1,8 @@
 package guru.qa.niffler.data.repository.impl;
 
 import guru.qa.niffler.config.Config;
+import guru.qa.niffler.data.dao.UserdataUserDao;
 import guru.qa.niffler.data.entity.userdata.FriendshipEntity;
-import guru.qa.niffler.data.entity.userdata.FriendshipStatus;
 import guru.qa.niffler.data.entity.userdata.UserEntity;
 import guru.qa.niffler.data.repository.UserdataUserRepository;
 import guru.qa.niffler.model.CurrencyValues;
@@ -21,7 +21,8 @@ import static guru.qa.niffler.data.tpl.Connections.holder;
 
 public class UserdataUserRepositoryJdbc implements UserdataUserRepository {
 
-    private static final String URL = Config.getInstance().userdataJdbcUrl();
+    private static final Config CFG = Config.getInstance();
+    private static final String URL = CFG.userdataJdbcUrl();
 
     @Override
     public UserEntity create(UserEntity user) {
@@ -30,12 +31,8 @@ public class UserdataUserRepositoryJdbc implements UserdataUserRepository {
                 PreparedStatement.RETURN_GENERATED_KEYS)) {
             ps.setString(1, user.getUsername());
             ps.setString(2, user.getCurrency().name());
-            ps.setString(3, user.getFirstname());
-            ps.setString(4, user.getSurname());
-            ps.setBytes(5, user.getPhoto());
-            ps.setBytes(6, user.getPhotoSmall());
-            ps.setString(7, user.getFullname());
             ps.executeUpdate();
+
             final UUID generatedUserId;
             try (ResultSet rs = ps.getGeneratedKeys()) {
                 if (rs.next()) {
@@ -52,14 +49,13 @@ public class UserdataUserRepositoryJdbc implements UserdataUserRepository {
     }
 
     @Override
-    public List<UserEntity> findById(UUID id) {
-        try (PreparedStatement ps = holder(URL).connection().prepareStatement(
-                "select * from \"user\" u join friendship f on u.id =f.addressee_id where f.addressee_id  = ? ")) {
+    public Optional<UserEntity> findById(UUID id) {
+        try (PreparedStatement ps = holder(URL).connection().prepareStatement("SELECT * FROM \"user\" WHERE id = ? ")) {
             ps.setObject(1, id);
 
             ps.execute();
             ResultSet rs = ps.getResultSet();
-            List<UserEntity> userEntityList = new ArrayList<>();
+
             if (rs.next()) {
                 UserEntity result = new UserEntity();
                 result.setId(rs.getObject("id", UUID.class));
@@ -69,40 +65,86 @@ public class UserdataUserRepositoryJdbc implements UserdataUserRepository {
                 result.setSurname(rs.getString("surname"));
                 result.setPhoto(rs.getBytes("photo"));
                 result.setPhotoSmall(rs.getBytes("photo_small"));
-                userEntityList.add(result);
+                return Optional.of(result);
+            } else {
+                return Optional.empty();
             }
-            return userEntityList;
-        } catch (SQLException e) {
-            throw new RuntimeException(e);
-        }
-    }
-
-
-    public void addIncomeInvitation(UserEntity requester, UserEntity addressee) {
-        try (PreparedStatement ps = holder(URL).connection().prepareStatement(
-                "INSERT INTO \"friendship\" (requester_id, addressee_id, status) VALUES (?, ?, ?)"
-        )) {
-            ps.setObject(1, requester.getId());
-            ps.setObject(2, addressee.getId());
-            ps.setString(3, PENDING.toString());
-            ps.executeUpdate();
-
-            FriendshipEntity fe = new FriendshipEntity();
-            fe.setRequester(requester);
-            fe.setAddressee(addressee);
-            fe.setStatus(PENDING);
-            fe.setCreatedDate(new java.util.Date());
-
-            requester.getFriendshipRequests().add(fe);
-            addressee.getFriendshipAddressees().add(fe);
         } catch (SQLException e) {
             throw new RuntimeException(e);
         }
     }
 
     @Override
-    public void addOutcomeInvitation(UserEntity requester, UserEntity addressee) {
-        addIncomeInvitation(addressee, requester);
+    public Optional<UserEntity> findByUsername(String username) {
+        try (PreparedStatement ps = holder(URL).connection().prepareStatement("SELECT * FROM \"user\" WHERE username = ? ")) {
+            ps.setObject(1, username);
+
+            ps.execute();
+            ResultSet rs = ps.getResultSet();
+
+            if (rs.next()) {
+                UserEntity result = new UserEntity();
+                result.setId(rs.getObject("id", UUID.class));
+                result.setUsername(username);
+                result.setCurrency(CurrencyValues.valueOf(rs.getString("currency")));
+                result.setFirstname(rs.getString("firstname"));
+                result.setSurname(rs.getString("surname"));
+                result.setPhoto(rs.getBytes("photo"));
+                result.setPhotoSmall(rs.getBytes("photo_small"));
+                return Optional.of(result);
+            } else {
+                return Optional.empty();
+            }
+        } catch (SQLException e) {
+            throw new RuntimeException(e);
+        }
+    }
+
+    @Override
+    public UserEntity update(UserEntity user) {
+        try (PreparedStatement ps = holder(URL).connection().prepareStatement(
+                """
+                        update \"user\"  set username = ?
+                        , currency = ?
+                        , firstname = ?
+                        , surname = ?
+                        , photo = ?
+                        , photo_small = ?
+                        , full_name = ?
+                        where id = ?
+                        """
+        )) {
+            ps.setString(1, user.getUsername());
+            ps.setString(2, user.getCurrency().name());
+            ps.setString(3, user.getFirstname());
+            ps.setString(4, user.getSurname());
+            ps.setObject(5, user.getPhoto());
+            ps.setObject(6, user.getPhotoSmall());
+            ps.setObject(7, user.getId());
+
+            ps.executeUpdate();
+
+            return user;
+        } catch (SQLException e) {
+            throw new RuntimeException(e);
+        }
+    }
+
+    @Override
+    public void sendInvitation(UserEntity requester, UserEntity addressee) {
+        try (PreparedStatement reqPs = holder(URL).connection().prepareStatement(
+                "INSERT INTO \"friendship\" (requester_id, addressee_id, status) VALUES (?, ?, ?)"
+        )
+        ) {
+            reqPs.setObject(1, requester.getId());
+            reqPs.setObject(2, addressee.getId());
+            reqPs.setObject(3, PENDING.toString());
+
+            reqPs.execute();
+
+        } catch (SQLException e) {
+            throw new RuntimeException(e);
+        }
     }
 
     @Override
@@ -110,9 +152,9 @@ public class UserdataUserRepositoryJdbc implements UserdataUserRepository {
         try (PreparedStatement reqPs = holder(URL).connection().prepareStatement(
                 "INSERT INTO \"friendship\" (requester_id, addressee_id, status) VALUES (?, ?, ?)"
         );
-        PreparedStatement addPs = holder(URL).connection().prepareStatement(
-                "INSERT INTO \"friendship\" (requester_id, addressee_id, status) VALUES (?, ?, ?)"
-        )){
+             PreparedStatement addPs = holder(URL).connection().prepareStatement(
+                     "INSERT INTO \"friendship\" (requester_id, addressee_id, status) VALUES (?, ?, ?)"
+             )) {
             reqPs.setObject(1, requester.getId());
             reqPs.setObject(2, addressee.getId());
             reqPs.setObject(3, ACCEPTED.toString());
@@ -123,7 +165,30 @@ public class UserdataUserRepositoryJdbc implements UserdataUserRepository {
 
             reqPs.execute();
             addPs.execute();
-            
+
+        } catch (SQLException e) {
+            throw new RuntimeException(e);
+        }
+    }
+
+    @Override
+    public void remove(UserEntity user) {
+        try (PreparedStatement ps = holder(URL).connection().prepareStatement(
+                "delete from \"user\" where id = ?"
+        );
+             PreparedStatement delReq = holder(URL).connection().prepareStatement(
+                     "delete from friendship where requester_id = ?"
+             );
+             PreparedStatement delAdd = holder(URL).connection().prepareStatement(
+                     "delete from friendship where addressee_id = ?"
+             )) {
+            ps.setObject(1, user.getId());
+            delReq.setObject(1, user.getId());
+            delAdd.setObject(1, user.getId());
+
+            ps.execute();
+            delReq.execute();
+            delAdd.execute();
         } catch (SQLException e) {
             throw new RuntimeException(e);
         }

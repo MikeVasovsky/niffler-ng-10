@@ -26,9 +26,4 @@ public interface Config {
 
   String githubUrl();
 
-  String gatewayUrl();
-
-  String userdataUrl();
-
-  String authUrl();
 }
