@@ -11,6 +11,7 @@ import retrofit2.converter.jackson.JacksonConverterFactory;
 
 import java.io.IOException;
 import java.util.Arrays;
+import java.util.Date;
 import java.util.List;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
@@ -30,7 +31,7 @@ public class SpendApiClient implements SpendClient {
   public SpendJson createSpend(SpendJson spend) {
     final Response<SpendJson> response;
     try {
-      response = spendApi.createSpend(spend)
+      response = spendApi.addSpend(spend)
           .execute();
     } catch (IOException e) {
       throw new AssertionError(e);
@@ -91,11 +92,11 @@ public class SpendApiClient implements SpendClient {
 
   public List<SpendJson> allSpends(String username,
                                    CurrencyValues currency,
-                                   String from,
-                                   String to) {
+                                   Date from,
+                                   Date to) {
     final Response<List<SpendJson>> response;
     try {
-      response = spendApi.allSpends(username, currency, from, to)
+      response = spendApi.getSpends(username, currency, from, to)
           .execute();
     } catch (IOException e) {
       throw new AssertionError(e);
@@ -115,10 +116,10 @@ public class SpendApiClient implements SpendClient {
     assertEquals(200, response.code());
   }
 
-  public List<CategoryJson> allCategory(String username) {
+  public List<CategoryJson> getCategories(String username) {
     final Response<List<CategoryJson>> response;
     try {
-      response = spendApi.allCategories(username)
+      response = spendApi.getCategories(username)
           .execute();
     } catch (IOException e) {
       throw new AssertionError(e);

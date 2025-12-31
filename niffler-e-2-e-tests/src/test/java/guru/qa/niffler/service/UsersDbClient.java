@@ -22,139 +22,200 @@ import org.springframework.transaction.support.TransactionTemplate;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
+import java.util.UUID;
 
 import static guru.qa.niffler.utils.RandomDataUtils.randomUsername;
 
 
 public class UsersDbClient implements UsersClient {
 
-  private static final Config CFG = Config.getInstance();
-  private static final PasswordEncoder pe = PasswordEncoderFactories.createDelegatingPasswordEncoder();
+    private static final Config CFG = Config.getInstance();
+    private static final PasswordEncoder pe = PasswordEncoderFactories.createDelegatingPasswordEncoder();
 
-  private final AuthUserRepository authUserRepository = new AuthUserRepositoryHibernate();
-  private final UserdataUserRepository userdataUserRepository = new UserdataUserRepositoryHibernate();
+    private final AuthUserRepository authUserRepository = new AuthUserRepositoryHibernate();
+    private final UserdataUserRepository userdataUserRepository = new UserdataUserRepositoryHibernate();
 
-  private final TransactionTemplate txTemplate = new TransactionTemplate(
-      new JdbcTransactionManager(
-          DataSources.dataSource(CFG.authJdbcUrl())
-      )
-  );
+    private final TransactionTemplate txTemplate = new TransactionTemplate(
+            new JdbcTransactionManager(
+                    DataSources.dataSource(CFG.authJdbcUrl())
+            )
+    );
 
-  private final XaTransactionTemplate xaTransactionTemplate = new XaTransactionTemplate(
-      CFG.authJdbcUrl(),
-      CFG.userdataJdbcUrl()
-  );
+    private final XaTransactionTemplate xaTransactionTemplate = new XaTransactionTemplate(
+            CFG.authJdbcUrl(),
+            CFG.userdataJdbcUrl()
+    );
 
-  @Override
-  public UserJson createUser(String username, String password) {
-    return xaTransactionTemplate.execute(() -> {
-          AuthUserEntity authUser = authUserEntity(username, password);
-          authUserRepository.create(authUser);
-          return UserJson.fromEntity(
-              userdataUserRepository.create(userEntity(username)),
-              null
-          );
+    @Override
+    public UserJson currentUser(String username) {
+        return null;
+    }
+
+    @Override
+    public UserJson createUser(String username, String password) {
+        return xaTransactionTemplate.execute(() -> {
+                    AuthUserEntity authUser = authUserEntity(username, password);
+                    authUserRepository.create(authUser);
+                    return UserJson.fromEntity(
+                            userdataUserRepository.create(userEntity(username)),
+                            null
+                    );
+                }
+        );
+    }
+
+    @Override
+    public List<UserJson> addIncomeInvitation(UserJson targetUser, int count) {
+        final List<UserJson> result = new ArrayList<>();
+        if (count > 0) {
+            UserEntity targetEntity = userdataUserRepository.findById(
+                    targetUser.id()
+            ).orElseThrow();
+
+            for (int i = 0; i < count; i++) {
+                xaTransactionTemplate.execute(() -> {
+                            String username = randomUsername();
+                            AuthUserEntity authUser = authUserEntity(username, "12345");
+                            authUserRepository.create(authUser);
+                            UserEntity adressee = userdataUserRepository.create(userEntity(username));
+                            userdataUserRepository.addFriendshipRequest(adressee, targetEntity);
+                            result.add(UserJson.fromEntity(adressee, FriendshipStatus.INVITE_RECEIVED));
+                            return null;
+                        }
+                );
+            }
         }
-    );
-  }
-
-  @Override
-  public List<UserJson> addIncomeInvitation(UserJson targetUser, int count) {
-    final List<UserJson> result = new ArrayList<>();
-    if (count > 0) {
-      UserEntity targetEntity = userdataUserRepository.findById(
-          targetUser.id()
-      ).orElseThrow();
-
-      for (int i = 0; i < count; i++) {
-        xaTransactionTemplate.execute(() -> {
-              String username = randomUsername();
-              AuthUserEntity authUser = authUserEntity(username, "12345");
-              authUserRepository.create(authUser);
-              UserEntity adressee = userdataUserRepository.create(userEntity(username));
-          userdataUserRepository.addFriendshipRequest(adressee, targetEntity);
-          result.add(UserJson.fromEntity(adressee, FriendshipStatus.INVITE_RECEIVED));
-              return null;
-            }
-        );
-      }
+        return result;
     }
-    return result;
-  }
 
-  @Override
-  public List<UserJson> addOutcomeInvitation(UserJson targetUser, int count) {
-    final List<UserJson> result = new ArrayList<>();
-    if (count > 0) {
-      UserEntity targetEntity = userdataUserRepository.findById(
-          targetUser.id()
-      ).orElseThrow();
+    @Override
+    public List<UserJson> addOutcomeInvitation(UserJson targetUser, int count) {
+        final List<UserJson> result = new ArrayList<>();
+        if (count > 0) {
+            UserEntity targetEntity = userdataUserRepository.findById(
+                    targetUser.id()
+            ).orElseThrow();
 
-      for (int i = 0; i < count; i++) {
-        xaTransactionTemplate.execute(() -> {
-              String username = randomUsername();
-              AuthUserEntity authUser = authUserEntity(username, "12345");
-              authUserRepository.create(authUser);
-              UserEntity adressee = userdataUserRepository.create(userEntity(username));
-          userdataUserRepository.addFriendshipRequest(targetEntity, adressee);
-          result.add(UserJson.fromEntity(adressee, FriendshipStatus.INVITE_SENT));
-              return null;
+            for (int i = 0; i < count; i++) {
+                xaTransactionTemplate.execute(() -> {
+                            String username = randomUsername();
+                            AuthUserEntity authUser = authUserEntity(username, "12345");
+                            authUserRepository.create(authUser);
+                            UserEntity adressee = userdataUserRepository.create(userEntity(username));
+                            userdataUserRepository.addFriendshipRequest(targetEntity, adressee);
+                            result.add(UserJson.fromEntity(adressee, FriendshipStatus.INVITE_SENT));
+                            return null;
+                        }
+                );
             }
-        );
-      }
+        }
+        return result;
     }
-    return result;
-  }
 
-  @Override
-  public List<UserJson> addFriend(UserJson targetUser, int count) {
-    final List<UserJson> result = new ArrayList<>();
-    if (count > 0) {
-      UserEntity targetEntity = userdataUserRepository.findById(
-          targetUser.id()
-      ).orElseThrow();
+    @Override
+    public List<UserJson> addFriend(UserJson targetUser, int count) {
+        final List<UserJson> result = new ArrayList<>();
+        if (count > 0) {
+            UserEntity targetEntity = userdataUserRepository.findById(
+                    targetUser.id()
+            ).orElseThrow();
 
-      for (int i = 0; i < count; i++) {
-        xaTransactionTemplate.execute(() -> {
-              String username = randomUsername();
-              AuthUserEntity authUser = authUserEntity(username, "12345");
-              authUserRepository.create(authUser);
-              UserEntity adressee = userdataUserRepository.create(userEntity(username));
-              userdataUserRepository.addFriend(targetEntity, adressee);
-              result.add(UserJson.fromEntity(adressee, FriendshipStatus.FRIEND));
-              return null;
+            for (int i = 0; i < count; i++) {
+                xaTransactionTemplate.execute(() -> {
+                            String username = randomUsername();
+                            AuthUserEntity authUser = authUserEntity(username, "12345");
+                            authUserRepository.create(authUser);
+                            UserEntity adressee = userdataUserRepository.create(userEntity(username));
+                            userdataUserRepository.addFriend(targetEntity, adressee);
+                            result.add(UserJson.fromEntity(adressee, FriendshipStatus.FRIEND));
+                            return null;
+                        }
+                );
             }
-        );
-      }
+        }
+        return result;
     }
-    return result;
-  }
 
-  private UserEntity userEntity(String username) {
-    UserEntity ue = new UserEntity();
-    ue.setUsername(username);
-    ue.setCurrency(CurrencyValues.RUB);
-    return ue;
-  }
+    @Override
+    public UserJson findById(UUID id) {
+        return null;
+    }
 
-  private AuthUserEntity authUserEntity(String username, String password) {
-    AuthUserEntity authUser = new AuthUserEntity();
-    authUser.setUsername(username);
-    authUser.setPassword(pe.encode(password));
-    authUser.setEnabled(true);
-    authUser.setAccountNonExpired(true);
-    authUser.setAccountNonLocked(true);
-    authUser.setCredentialsNonExpired(true);
-    authUser.setAuthorities(
-        Arrays.stream(Authority.values()).map(
-            e -> {
-              AuthorityEntity ae = new AuthorityEntity();
-              ae.setUser(authUser);
-              ae.setAuthority(e);
-              return ae;
-            }
-        ).toList()
-    );
-    return authUser;
-  }
+    @Override
+    public List<UserJson> findAllUsers(String username, String searchQuery) {
+        return List.of();
+    }
+
+    @Override
+    public UserJson findByUsername(String username) {
+        return null;
+    }
+
+    @Override
+    public UserJson update(UserJson user) {
+        return null;
+    }
+
+    @Override
+    public void sendInvitation(UserJson targetUser, int count) {
+
+    }
+
+    @Override
+    public UserJson sendInvitation(String username, String targetUser) {
+        return null;
+    }
+
+    @Override
+    public UserJson acceptInvitation(String username, String targetUser) {
+        return null;
+    }
+
+    @Override
+    public void remove(UserJson user) {
+
+    }
+
+    @Override
+    public UserJson declineInvitation(String username, String targetUsername) {
+        return null;
+    }
+
+    @Override
+    public List<UserJson> getAllFerinds(String username, String searchQuery) {
+        return List.of();
+    }
+
+    @Override
+    public void removeFriends(String username, String targetUsername) {
+
+    }
+
+    private UserEntity userEntity(String username) {
+        UserEntity ue = new UserEntity();
+        ue.setUsername(username);
+        ue.setCurrency(CurrencyValues.RUB);
+        return ue;
+    }
+
+    private AuthUserEntity authUserEntity(String username, String password) {
+        AuthUserEntity authUser = new AuthUserEntity();
+        authUser.setUsername(username);
+        authUser.setPassword(pe.encode(password));
+        authUser.setEnabled(true);
+        authUser.setAccountNonExpired(true);
+        authUser.setAccountNonLocked(true);
+        authUser.setCredentialsNonExpired(true);
+        authUser.setAuthorities(
+                Arrays.stream(Authority.values()).map(
+                        e -> {
+                            AuthorityEntity ae = new AuthorityEntity();
+                            ae.setUser(authUser);
+                            ae.setAuthority(e);
+                            return ae;
+                        }
+                ).toList()
+        );
+        return authUser;
+    }
 }
