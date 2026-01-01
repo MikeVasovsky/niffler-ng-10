@@ -6,8 +6,6 @@ import guru.qa.niffler.model.UserJson;
 import guru.qa.niffler.service.UsersApiClient;
 import guru.qa.niffler.utils.RandomDataUtils;
 import org.junit.jupiter.api.Test;
-import org.junit.jupiter.params.ParameterizedTest;
-import org.junit.jupiter.params.provider.ValueSource;
 
 import java.util.List;
 
@@ -21,7 +19,7 @@ public class UserdataTest {
     @User
     @Test
     void currentUserTest(UserJson user){
-        UserJson userJson = usersApiClient.currentUser(user.username());
+        UserJson userJson = usersApiClient.findByUsername(user.username());
         assertEquals(user.username(), userJson.username());
     }
 
@@ -53,15 +51,15 @@ public class UserdataTest {
 
     @Test
     void testSendInvitation(){
-        UserJson user = usersApiClient.currentUser("detra.weissnat");
-        UserJson target = usersApiClient.currentUser("marcos.murazik");
+        UserJson user = usersApiClient.findByUsername("detra.weissnat");
+        UserJson target = usersApiClient.findByUsername("marcos.murazik");
         usersApiClient.sendInvitation(user.username(), target.username());
     }
 
     @User
     @Test
     void acceptFriendshipReq(UserJson userSend){
-        UserJson newUser2 = usersApiClient.currentUser(RandomDataUtils.randomUsername());
+        UserJson newUser2 = usersApiClient.findByUsername(RandomDataUtils.randomUsername());
         usersApiClient.sendInvitation(userSend.username(),newUser2.username());
         usersApiClient.acceptInvitation(newUser2.username(), userSend.username());
     }

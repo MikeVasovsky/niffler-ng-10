@@ -1,43 +1,58 @@
 package guru.qa.niffler.page;
 
-import com.codeborne.selenide.ElementsCollection;
+import com.codeborne.selenide.Condition;
 import com.codeborne.selenide.SelenideElement;
-
+import org.openqa.selenium.By;
 import static com.codeborne.selenide.Condition.text;
 import static com.codeborne.selenide.Condition.visible;
 import static com.codeborne.selenide.Selenide.$;
+import static org.openqa.selenium.By.xpath;
 
 public class MainPage {
-  private final SelenideElement header = $("#root header");
-  private final SelenideElement headerMenu = $("ul[role='menu']");
-  private final ElementsCollection tableRows = $("#spendings tbody").$$("tr");
-  private final SelenideElement statComponent = $("#stat");
   private final SelenideElement spendingTable = $("#spendings");
+  private final SelenideElement spendSearchField = $(xpath("//input[@placeholder=\"Search\"]"));
+  private final SelenideElement profileMenuBtn = $(xpath("//div[@class=\"MuiAvatar-root MuiAvatar-circular MuiAvatar-colorDefault css-1pqo26w\"]"));
+  private final SelenideElement profileBtn = $(xpath("//a[contains(text(), 'Profile')]"));
+  private final SelenideElement friendsBtn = $(xpath("//a[@href=\"/people/friends\"]"));
+  private final SelenideElement allPeoplrBtn = $(xpath("//a[@href=\"/people/all\"]"));
 
-  public FriendsPage friendsPage() {
-    header.$("button").click();
-    headerMenu.$$("li").find(text("Friends")).click();
-    return new FriendsPage();
+  public MainPage checkThatPageLoaded() {
+    spendingTable.should(visible);
+    return this;
   }
 
-  public PeoplePage allPeoplesPage() {
-    header.$("button").click();
-    headerMenu.$$("li").find(text("All People")).click();
-    return new PeoplePage();
-  }
-
-  public EditSpendingPage editSpending(String spendingDescription) {
-    tableRows.find(text(spendingDescription)).$$("td").get(5).click();
+  public EditSpendingPage editSpending(String description) {
+    spendingTable.$$("tbody tr").find(text(description)).$$("td").get(5).click();
     return new EditSpendingPage();
   }
 
-  public void checkThatTableContainsSpending(String spendingDescription) {
-    tableRows.find(text(spendingDescription)).should(visible);
+  public MainPage checkThatTableContains(String spend) {
+    spendingTable.$$("tbody tr").find(text(spend)).should(visible);
+    return this;
   }
 
-  public MainPage checkThatPageLoaded() {
-    statComponent.should(visible).shouldHave(text("Statistics"));
-    spendingTable.should(visible).shouldHave(text("History of Spendings"));
+  public ProfilePage goToProfilePage() {
+    profileMenuBtn.click();
+    profileBtn.click();
+    return new ProfilePage();
+  }
+
+  public FriendsPage goToFriendsPage() {
+    profileMenuBtn.click();
+    friendsBtn.click();
+    return new FriendsPage();
+  }
+
+  public PeoplePage goToPeoplePage() {
+    profileMenuBtn.click();
+    allPeoplrBtn.click();
+    return new PeoplePage();
+  }
+
+
+  public MainPage searchSpending(String spendName){
+    spendSearchField.val(spendName)
+            .pressEnter();
     return this;
   }
 }

@@ -25,7 +25,7 @@ public class UsersApiClient implements UsersClient {
     private final UserdataApi userdataApi = retrofit.create(UserdataApi.class);
 
     @Override
-    public UserJson currentUser(String username) {
+    public UserJson findByUsername(String username) {
         final Response<UserJson> response;
         try {
             response = userdataApi.currentUser(username).execute();
@@ -76,10 +76,6 @@ public class UsersApiClient implements UsersClient {
         return response.body();
     }
 
-    @Override
-    public UserJson findByUsername(String username) {
-        throw new UnsupportedOperationException("Данный метод не реализован");
-    }
 
     @Override
     public UserJson update(UserJson user) {
@@ -145,7 +141,7 @@ public class UsersApiClient implements UsersClient {
     }
 
     @Override
-    public List<UserJson> getAllFerinds(String username, String searchQuery) {
+    public List<UserJson> getAllFriends(String username, String searchQuery) {
         Response<List<UserJson>> response;
         try {
             response = userdataApi.friends(username, searchQuery)

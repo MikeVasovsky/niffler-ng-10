@@ -7,7 +7,6 @@ import java.util.UUID;
 
 public interface UsersClient {
 
-    UserJson currentUser(String username);
 
     UserJson createUser(String username, String password);
 
@@ -35,7 +34,7 @@ public interface UsersClient {
 
     UserJson declineInvitation(String username, String targetUsername);
 
-    List<UserJson> getAllFerinds(String username, String searchQuery);
+    List<UserJson> getAllFriends(String username, String searchQuery);
 
     void removeFriends(String username, String targetUsername);
 }

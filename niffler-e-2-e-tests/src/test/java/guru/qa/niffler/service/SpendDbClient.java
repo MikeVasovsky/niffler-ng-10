@@ -41,12 +41,14 @@ public class SpendDbClient implements SpendClient {
 
     @Override
     public SpendJson editSpend(SpendJson spend) {
-        return null;
+        throw new UnsupportedOperationException("Метод из апи интерфейса");
+
     }
 
     @Override
     public SpendJson getSpend(String id) {
-        return null;
+        throw new UnsupportedOperationException("Метод из апи интерфейса");
+
     }
 
     @Override
@@ -56,6 +58,7 @@ public class SpendDbClient implements SpendClient {
 
     @Override
     public void removeSpends(String username, String... ids) {
+        throw new UnsupportedOperationException("Метод из апи интерфейса");
 
     }
 
