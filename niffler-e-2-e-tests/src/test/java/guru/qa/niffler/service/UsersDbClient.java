@@ -33,6 +33,8 @@ public class UsersDbClient implements UsersClient {
     private final AuthUserRepository authUserRepository = new AuthUserRepositoryHibernate();
     private final UserdataUserRepository userdataUserRepository = new UserdataUserRepositoryHibernate();
 
+    private final String password = "12345";
+
     private final TransactionTemplate txTemplate = new TransactionTemplate(
             new JdbcTransactionManager(
                     DataSources.dataSource(CFG.authJdbcUrl())

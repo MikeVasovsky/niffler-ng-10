@@ -53,13 +53,11 @@ public class UsersApiClient implements UsersClient {
 
     @Override
     public List<UserJson> addFriend(UserJson targetUser, int count) {
-
         throw new UnsupportedOperationException("Данный метод не реализован");
     }
 
     @Override
     public UserJson findById(UUID id) {
-
         throw new UnsupportedOperationException("Данный метод не реализован");
     }
 
