@@ -6,6 +6,8 @@ import guru.qa.niffler.page.component.Calendar;
 import javax.annotation.Nonnull;
 import javax.annotation.ParametersAreNonnullByDefault;
 
+import java.util.Date;
+
 import static com.codeborne.selenide.Selenide.$;
 
 @ParametersAreNonnullByDefault
@@ -14,7 +16,7 @@ public class EditSpendingPage {
   private final SelenideElement descriptionInput = $("#description");
   private final SelenideElement saveBtn = $("#save");
 
-  private final Calendar calendar = new Calendar($(".SpendingCalendar"));
+  private final Calendar calendar = new Calendar($("#root"));
 
   @Nonnull
   public EditSpendingPage setNewSpendingDescription(String description) {
@@ -27,5 +29,11 @@ public class EditSpendingPage {
   public MainPage save() {
     saveBtn.click();
     return new MainPage();
+  }
+
+  @Nonnull
+  public EditSpendingPage setDateInCalendar(Date date){
+    calendar.setDateInCalendar(date);
+    return this;
   }
 }

@@ -9,6 +9,9 @@ import guru.qa.niffler.model.UserJson;
 import guru.qa.niffler.page.LoginPage;
 import org.junit.jupiter.api.Test;
 
+import java.time.LocalDate;
+import java.util.Date;
+
 @WebTest
 public class SpendingTest {
 
@@ -33,5 +36,20 @@ public class SpendingTest {
         .setNewSpendingDescription(newDescription)
         .save()
         .checkThatTableContainsSpending(newDescription);
+  }
+
+  @User(
+          spendings = @Spending(
+                  amount = 89990.00,
+                  description = "Обучение Niffler 2.0 юбилейный поток!",
+                  category = "Обучение"
+          )
+  )
+  @Test
+  void testAddDateInCalendar(UserJson user){
+    Selenide.open(CFG.frontUrl(), LoginPage.class)
+            .successLogin(user.username(), user.testData().password())
+            .goToSpendingPage()
+            .setDateInCalendar(new Date(125, 2, 1));
   }
 }

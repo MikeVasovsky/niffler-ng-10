@@ -1,6 +1,7 @@
 package guru.qa.niffler.page.component;
 
 import com.codeborne.selenide.SelenideElement;
+import guru.qa.niffler.page.FriendsPage;
 
 import javax.annotation.ParametersAreNonnullByDefault;
 
@@ -12,7 +13,4 @@ public class Header {
 
   private final SelenideElement self = $("#root header");
 
-  public void checkHeaderText() {
-    self.$("h1").shouldHave(text("Niffler"));
-  }
 }
