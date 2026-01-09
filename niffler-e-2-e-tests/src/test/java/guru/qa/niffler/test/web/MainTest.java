@@ -16,15 +16,15 @@ public class MainTest {
 
     @User(
             spendings = @Spending(
-                description = "testDesc",
-                amount = 1000.00,
-                currency = RUB,
-                category = "testCat"
-        )
+                    description = "testDesc",
+                    amount = 1000.00,
+                    currency = RUB,
+                    category = "testCat"
+            )
 
     )
     @Test
-    void testSearch(UserJson user){
+    void testSearch(UserJson user) {
         Selenide.open(CFG.frontUrl(), LoginPage.class)
                 .successLogin(user.username(), user.testData().password())
                 .checkThatPageLoaded()
@@ -41,7 +41,7 @@ public class MainTest {
 
     )
     @Test
-    void testClearSearchFieldIfIsNotEmpty(UserJson user){
+    void testClearSearchFieldIfIsNotEmpty(UserJson user) {
         Selenide.open(CFG.frontUrl(), LoginPage.class)
                 .successLogin(user.username(), user.testData().password())
                 .checkThatPageLoaded()
@@ -49,4 +49,53 @@ public class MainTest {
                 .checkClearSearchFieldIfIsNotEmpty();
     }
 
+    @User
+    @Test
+    void goToFriendsPage(UserJson user) {
+        Selenide.open(CFG.frontUrl(), LoginPage.class)
+                .successLogin(user.username(), user.testData().password())
+                .checkThatPageLoaded()
+                .goToFriendsPage()
+                .checkFriendsPageLoad();
+    }
+
+    @User
+    @Test
+    void goToAllPeoplePage(UserJson user) {
+        Selenide.open(CFG.frontUrl(), LoginPage.class)
+                .successLogin(user.username(), user.testData().password())
+                .checkThatPageLoaded()
+                .goToallPeoplesPage()
+                .checkThatPageLoaded();
+    }
+
+    @User
+    @Test
+    void goToProfilePage(UserJson user) {
+        Selenide.open(CFG.frontUrl(), LoginPage.class)
+                .successLogin(user.username(), user.testData().password())
+                .checkThatPageLoaded()
+                .goToProfilePage()
+                .checkThatPageLoaded();
+    }
+
+    @User
+    @Test
+    void signOutTest(UserJson user) {
+        Selenide.open(CFG.frontUrl(), LoginPage.class)
+                .successLogin(user.username(), user.testData().password())
+                .checkThatPageLoaded()
+                .logOut()
+                .checkThatPageLoaded();
+    }
+
+    @User
+    @Test
+    void goToEditSpendingPage(UserJson user) {
+        Selenide.open(CFG.frontUrl(), LoginPage.class)
+                .successLogin(user.username(), user.testData().password())
+                .checkThatPageLoaded()
+                .goToEditSpendingPage()
+                .checkThatPageLoaded();
+    }
 }

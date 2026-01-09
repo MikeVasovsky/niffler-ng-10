@@ -14,36 +14,49 @@ import org.junit.jupiter.api.Test;
 @WebTest
 public class ProfileTest {
 
-  private static final Config CFG = Config.getInstance();
+    private static final Config CFG = Config.getInstance();
 
-  @User(
-      categories = @Category(
-          archived = true
-      )
-  )
-  @Test
-  void archivedCategoryShouldPresentInCategoriesList(UserJson user) {
-    Selenide.open(CFG.frontUrl(), LoginPage.class)
-        .successLogin(user.username(), user.testData().password())
-        .checkThatPageLoaded();
+    @User
+    @Test
+    void editProfile(UserJson user) {
+        String newName = user.fullname() + "change";
+        Selenide.open(CFG.frontUrl(), LoginPage.class)
+                .successLogin(user.username(), user.testData().password())
+                .checkThatPageLoaded()
+                .goToProfilePage()
+                .setName(newName)
+                .submitChange()
+                .checkName(newName);
+    }
 
-    Selenide.open(CFG.frontUrl() + "profile", ProfilePage.class)
-        .checkArchivedCategoryExists(user.testData().categories().getFirst().name());
-  }
+    @User(
+            categories = @Category(
+                    archived = true
+            )
+    )
+    @Test
+    void archivedCategoryShouldPresentInCategoriesList(UserJson user) {
+        Selenide.open(CFG.frontUrl(), LoginPage.class)
+                .successLogin(user.username(), user.testData().password())
+                .checkThatPageLoaded();
 
-  @User(
-      username = "duck",
-      categories = @Category(
-          archived = false
-      )
-  )
-  @Test
-  void activeCategoryShouldPresentInCategoriesList(CategoryJson category) {
-    Selenide.open(CFG.frontUrl(), LoginPage.class)
-        .successLogin("duck", "12345")
-        .checkThatPageLoaded();
+        Selenide.open(CFG.frontUrl() + "profile", ProfilePage.class)
+                .checkArchivedCategoryExists(user.testData().categories().getFirst().name());
+    }
 
-    Selenide.open(CFG.frontUrl() + "profile", ProfilePage.class)
-        .checkCategoryExists(category.name());
-  }
+    @User(
+            username = "duck",
+            categories = @Category(
+                    archived = false
+            )
+    )
+    @Test
+    void activeCategoryShouldPresentInCategoriesList(CategoryJson category) {
+        Selenide.open(CFG.frontUrl(), LoginPage.class)
+                .successLogin("duck", "12345")
+                .checkThatPageLoaded();
+
+        Selenide.open(CFG.frontUrl() + "profile", ProfilePage.class)
+                .checkCategoryExists(category.name());
+    }
 }

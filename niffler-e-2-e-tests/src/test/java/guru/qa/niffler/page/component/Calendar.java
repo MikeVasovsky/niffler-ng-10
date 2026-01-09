@@ -5,20 +5,18 @@ import com.codeborne.selenide.SelenideElement;
 import javax.annotation.ParametersAreNonnullByDefault;
 import java.util.Date;
 
-import static com.codeborne.selenide.Selenide.$;
-
 @ParametersAreNonnullByDefault
 public class Calendar {
-  private final SelenideElement self;
-  private final SelenideElement dateInputFld;
+    private final SelenideElement self;
+    private final SelenideElement dateInputFld;
 
-  public Calendar(SelenideElement self) {
-    this.self = self;
-    this.dateInputFld = self.$("input[name='date']");
-  }
+    public Calendar(SelenideElement self) {
+        this.self = self;
+        this.dateInputFld = self.$("input[name='date']");
+    }
 
-  public Calendar setDateInCalendar(Date date){
-      dateInputFld.val(String.valueOf(date));
-      return this;
-  }
+    public Calendar setDateInCalendar(Date date) {
+        dateInputFld.val(String.valueOf(date));
+        return this;
+    }
 }

@@ -7,6 +7,7 @@ import guru.qa.niffler.data.entity.auth.AuthorityEntity;
 import guru.qa.niffler.data.mapper.AuthorityEntityRowMapper;
 
 import javax.annotation.Nonnull;
+import javax.annotation.ParametersAreNonnullByDefault;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
@@ -21,6 +22,7 @@ public class AuthAuthorityDaoJdbc implements AuthAuthorityDao {
   private static final Config CFG = Config.getInstance();
   private static final String URL = CFG.authJdbcUrl();
 
+  @Nonnull
   @Override
   @SuppressWarnings("resource")
   public void create(AuthorityEntity... authority) {

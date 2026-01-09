@@ -2,10 +2,13 @@ package guru.qa.niffler.page.component;
 
 import com.codeborne.selenide.SelenideElement;
 
+import javax.annotation.ParametersAreNonnullByDefault;
+
 import static com.codeborne.selenide.Condition.empty;
 import static com.codeborne.selenide.Condition.not;
 import static com.codeborne.selenide.Selenide.$;
 
+@ParametersAreNonnullByDefault
 public class SearchField {
     private final SelenideElement self;
     private final SelenideElement clearBtn = $("button[id='input-clear']");
@@ -27,7 +30,7 @@ public class SearchField {
         return this;
     }
 
-    public SearchField inputText(String val){
+    public SearchField inputText(String val) {
         self.val(val);
         return this;
     }

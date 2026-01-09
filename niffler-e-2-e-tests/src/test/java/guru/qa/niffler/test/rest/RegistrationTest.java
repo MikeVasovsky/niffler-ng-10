@@ -14,7 +14,6 @@ public class RegistrationTest {
   private final AuthApiClient authApiClient = new AuthApiClient();
 
   @Test
-  @Disabled
   void newUserShouldRegisteredByApiCall() throws IOException {
     final String randomUsername = RandomDataUtils.randomUsername();
 
