@@ -19,7 +19,6 @@ import java.util.UUID;
 
 import static guru.qa.niffler.data.jdbc.Connections.holder;
 
-@ParametersAreNonnullByDefault
 public class AuthUserRepositoryJdbc implements AuthUserRepository {
 
   private static final Config CFG = Config.getInstance();

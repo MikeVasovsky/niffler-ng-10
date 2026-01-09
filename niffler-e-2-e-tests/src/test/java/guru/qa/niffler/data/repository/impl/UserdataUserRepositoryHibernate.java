@@ -14,7 +14,6 @@ import java.util.UUID;
 
 import static guru.qa.niffler.data.jpa.EntityManagers.em;
 
-@ParametersAreNonnullByDefault
 public class UserdataUserRepositoryHibernate implements UserdataUserRepository {
 
   private static final Config CFG = Config.getInstance();

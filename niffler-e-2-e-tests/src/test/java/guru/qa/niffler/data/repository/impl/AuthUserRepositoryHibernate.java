@@ -13,7 +13,6 @@ import java.util.UUID;
 
 import static guru.qa.niffler.data.jpa.EntityManagers.em;
 
-@ParametersAreNonnullByDefault
 public class AuthUserRepositoryHibernate implements AuthUserRepository {
 
   private static final Config CFG = Config.getInstance();
