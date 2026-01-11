@@ -9,6 +9,7 @@ import guru.qa.niffler.data.entity.auth.AuthUserEntity;
 import guru.qa.niffler.data.entity.auth.AuthorityEntity;
 import guru.qa.niffler.data.extractor.AuthUserEntityExtractor;
 import guru.qa.niffler.data.repository.AuthUserRepository;
+import io.qameta.allure.Step;
 import org.springframework.jdbc.core.JdbcTemplate;
 
 import javax.annotation.Nonnull;
@@ -27,6 +28,7 @@ public class AuthUserRepositorySpringJdbc implements AuthUserRepository {
   private final AuthUserDao authUserDao = new AuthUserDaoSpringJdbc();
   private final AuthAuthorityDao authAuthorityDao = new AuthAuthorityDaoSpringJdbc();
 
+  @Step("Создать юзера")
   @Nonnull
   @Override
   public AuthUserEntity create(AuthUserEntity user) {
@@ -35,6 +37,7 @@ public class AuthUserRepositorySpringJdbc implements AuthUserRepository {
     return user;
   }
 
+  @Step("Найти юзера по id")
   @Nonnull
   @Override
   public Optional<AuthUserEntity> findById(UUID id) {
@@ -60,6 +63,7 @@ public class AuthUserRepositorySpringJdbc implements AuthUserRepository {
         : Optional.of(result.getFirst());
   }
 
+  @Step("Найти юзера по имени")
   @Nonnull
   @Override
   public Optional<AuthUserEntity> findByUsername(String username) {

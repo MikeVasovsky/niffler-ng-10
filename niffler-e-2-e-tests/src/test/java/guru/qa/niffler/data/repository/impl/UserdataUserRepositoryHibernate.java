@@ -4,6 +4,7 @@ import guru.qa.niffler.config.Config;
 import guru.qa.niffler.data.entity.userdata.FriendshipStatus;
 import guru.qa.niffler.data.entity.userdata.UserEntity;
 import guru.qa.niffler.data.repository.UserdataUserRepository;
+import io.qameta.allure.Step;
 import jakarta.persistence.EntityManager;
 import jakarta.persistence.NoResultException;
 
@@ -20,6 +21,7 @@ public class UserdataUserRepositoryHibernate implements UserdataUserRepository {
 
   private final EntityManager entityManager = em(CFG.userdataJdbcUrl());
 
+  @Step("Создать пользователя")
   @Nonnull
   @Override
   public UserEntity create(UserEntity user) {
@@ -28,6 +30,7 @@ public class UserdataUserRepositoryHibernate implements UserdataUserRepository {
     return user;
   }
 
+  @Step("Изменить пользователя")
   @Nonnull
   @Override
   public UserEntity update(UserEntity user) {
@@ -35,6 +38,7 @@ public class UserdataUserRepositoryHibernate implements UserdataUserRepository {
     return entityManager.merge(user);
   }
 
+  @Step("Найти пользователя по id")
   @Nonnull
   @Override
   public Optional<UserEntity> findById(UUID id) {
@@ -43,6 +47,7 @@ public class UserdataUserRepositoryHibernate implements UserdataUserRepository {
     );
   }
 
+  @Step("Найти пользователя по имени")
   @Nonnull
   @Override
   public Optional<UserEntity> findByUsername(String username) {
@@ -57,12 +62,14 @@ public class UserdataUserRepositoryHibernate implements UserdataUserRepository {
     }
   }
 
+  @Step("Добавить заявку в друзья")
   @Override
   public void addFriendshipRequest(UserEntity requester, UserEntity addressee) {
     entityManager.joinTransaction();
     requester.addFriends(FriendshipStatus.PENDING, addressee);
   }
 
+  @Step("Добавить друга")
   @Override
   public void addFriend(UserEntity requester, UserEntity addressee) {
     entityManager.joinTransaction();

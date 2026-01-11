@@ -36,7 +36,7 @@ public class SpendingTest {
         Selenide.open(CFG.frontUrl(), LoginPage.class)
                 .successLogin(user.username(), user.testData().password())
                 .checkThatPageLoaded()
-                .goToSpendingPage()
+                .goToEditSpendingPage()
                 .setAmount("1999")
                 .setNewSpendingDescription(description)
                 .setCategory(category)
@@ -76,7 +76,7 @@ public class SpendingTest {
     void AddDateInCalendar(UserJson user) {
         Selenide.open(CFG.frontUrl(), LoginPage.class)
                 .successLogin(user.username(), user.testData().password())
-                .goToSpendingPage()
+                .goToEditSpendingPage()
                 .setDateInCalendar(new Date(125, 2, 1));
     }
 

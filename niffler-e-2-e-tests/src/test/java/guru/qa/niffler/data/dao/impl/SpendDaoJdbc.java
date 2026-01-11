@@ -6,6 +6,7 @@ import guru.qa.niffler.data.entity.spend.CategoryEntity;
 import guru.qa.niffler.data.entity.spend.SpendEntity;
 import guru.qa.niffler.data.mapper.SpendEntityRowMapper;
 import guru.qa.niffler.model.CurrencyValues;
+import io.qameta.allure.Step;
 
 import javax.annotation.Nonnull;
 import javax.annotation.ParametersAreNonnullByDefault;
@@ -25,6 +26,7 @@ public class SpendDaoJdbc implements SpendDao {
   private static final Config CFG = Config.getInstance();
   private static final String URL = CFG.spendJdbcUrl();
 
+  @Step("Создать трату")
   @Nonnull
   @Override
   @SuppressWarnings("resource")
@@ -58,6 +60,7 @@ public class SpendDaoJdbc implements SpendDao {
     }
   }
 
+  @Step("Найти все траты")
   @Nonnull
   @Override
   @SuppressWarnings("resource")
@@ -87,6 +90,7 @@ public class SpendDaoJdbc implements SpendDao {
     }
   }
 
+  @Step("Найти все траты по имени пользователя")
   @Nonnull
   @Override
   @SuppressWarnings("resource")
@@ -117,6 +121,7 @@ public class SpendDaoJdbc implements SpendDao {
     }
   }
 
+  @Step("Найти все траты по id")
   @Nonnull
   @Override
   @SuppressWarnings("resource")
@@ -140,6 +145,7 @@ public class SpendDaoJdbc implements SpendDao {
     }
   }
 
+  @Step("Изменить трату")
   @Nonnull
   @Override
   @SuppressWarnings("resource")
@@ -166,6 +172,7 @@ public class SpendDaoJdbc implements SpendDao {
     return spend;
   }
 
+  @Step("Удалить трату")
   @Override
   @SuppressWarnings("resource")
   public void deleteSpend(SpendEntity spend) {

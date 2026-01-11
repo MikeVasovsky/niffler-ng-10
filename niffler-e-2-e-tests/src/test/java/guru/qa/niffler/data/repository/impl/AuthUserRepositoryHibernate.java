@@ -3,6 +3,7 @@ package guru.qa.niffler.data.repository.impl;
 import guru.qa.niffler.config.Config;
 import guru.qa.niffler.data.entity.auth.AuthUserEntity;
 import guru.qa.niffler.data.repository.AuthUserRepository;
+import io.qameta.allure.Step;
 import jakarta.persistence.EntityManager;
 import jakarta.persistence.NoResultException;
 
@@ -19,6 +20,7 @@ public class AuthUserRepositoryHibernate implements AuthUserRepository {
 
   private final EntityManager entityManager = em(CFG.authJdbcUrl());
 
+  @Step("Создать юзера")
   @Nonnull
   @Override
   public AuthUserEntity create(AuthUserEntity user) {
@@ -27,6 +29,7 @@ public class AuthUserRepositoryHibernate implements AuthUserRepository {
     return user;
   }
 
+  @Step("Найти юзера по id")
   @Nonnull
   @Override
   public Optional<AuthUserEntity> findById(UUID id) {
@@ -35,6 +38,7 @@ public class AuthUserRepositoryHibernate implements AuthUserRepository {
     );
   }
 
+  @Step("Найти юзера по имени")
   @Nonnull
   @Override
   public Optional<AuthUserEntity> findByUsername(String username) {

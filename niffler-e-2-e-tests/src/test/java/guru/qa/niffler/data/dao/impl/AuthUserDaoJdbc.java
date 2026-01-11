@@ -4,6 +4,7 @@ import guru.qa.niffler.config.Config;
 import guru.qa.niffler.data.dao.AuthUserDao;
 import guru.qa.niffler.data.entity.auth.AuthUserEntity;
 import guru.qa.niffler.data.mapper.AuthUserEntityRowMapper;
+import io.qameta.allure.Step;
 
 import javax.annotation.Nonnull;
 import javax.annotation.ParametersAreNonnullByDefault;
@@ -19,103 +20,107 @@ import static guru.qa.niffler.data.jdbc.Connections.holder;
 
 public class AuthUserDaoJdbc implements AuthUserDao {
 
-  private static final Config CFG = Config.getInstance();
-  private static final String URL = CFG.authJdbcUrl();
+    private static final Config CFG = Config.getInstance();
+    private static final String URL = CFG.authJdbcUrl();
 
-  @Nonnull
-  @Override
-  @SuppressWarnings("resource")
-  public AuthUserEntity create(AuthUserEntity user) {
-    try (PreparedStatement ps = holder(URL).connection().prepareStatement(
-        "INSERT INTO \"user\" (username, password, enabled, account_non_expired, account_non_locked, credentials_non_expired) " +
-            "VALUES (?, ?, ?, ?, ?, ?)", PreparedStatement.RETURN_GENERATED_KEYS)) {
-      ps.setString(1, user.getUsername());
-      ps.setString(2, user.getPassword());
-      ps.setBoolean(3, user.getEnabled());
-      ps.setBoolean(4, user.getAccountNonExpired());
-      ps.setBoolean(5, user.getAccountNonLocked());
-      ps.setBoolean(6, user.getCredentialsNonExpired());
+    @Step("Создать пользователя")
+    @Nonnull
+    @Override
+    @SuppressWarnings("resource")
+    public AuthUserEntity create(AuthUserEntity user) {
+        try (PreparedStatement ps = holder(URL).connection().prepareStatement(
+                "INSERT INTO \"user\" (username, password, enabled, account_non_expired, account_non_locked, credentials_non_expired) " +
+                        "VALUES (?, ?, ?, ?, ?, ?)", PreparedStatement.RETURN_GENERATED_KEYS)) {
+            ps.setString(1, user.getUsername());
+            ps.setString(2, user.getPassword());
+            ps.setBoolean(3, user.getEnabled());
+            ps.setBoolean(4, user.getAccountNonExpired());
+            ps.setBoolean(5, user.getAccountNonLocked());
+            ps.setBoolean(6, user.getCredentialsNonExpired());
 
-      ps.executeUpdate();
+            ps.executeUpdate();
 
-      final UUID generatedKey;
-      try (ResultSet rs = ps.getGeneratedKeys()) {
-        if (rs.next()) {
-          generatedKey = rs.getObject("id", UUID.class);
-        } else {
-          throw new SQLException("Can`t find id in ResultSet");
+            final UUID generatedKey;
+            try (ResultSet rs = ps.getGeneratedKeys()) {
+                if (rs.next()) {
+                    generatedKey = rs.getObject("id", UUID.class);
+                } else {
+                    throw new SQLException("Can`t find id in ResultSet");
+                }
+            }
+            user.setId(generatedKey);
+            return user;
+        } catch (SQLException e) {
+            throw new RuntimeException(e);
         }
-      }
-      user.setId(generatedKey);
-      return user;
-    } catch (SQLException e) {
-      throw new RuntimeException(e);
     }
-  }
 
-  @Nonnull
-  @Override
-  @SuppressWarnings("resource")
-  public Optional<AuthUserEntity> findById(UUID id) {
-    try (PreparedStatement ps = holder(URL).connection().prepareStatement("SELECT * FROM \"user\" WHERE id = ?")) {
-      ps.setObject(1, id);
-      ps.execute();
+    @Step("Найти по id")
+    @Nonnull
+    @Override
+    @SuppressWarnings("resource")
+    public Optional<AuthUserEntity> findById(UUID id) {
+        try (PreparedStatement ps = holder(URL).connection().prepareStatement("SELECT * FROM \"user\" WHERE id = ?")) {
+            ps.setObject(1, id);
+            ps.execute();
 
-      try (ResultSet rs = ps.getResultSet()) {
-        if (rs.next()) {
-          return Optional.of(
-              AuthUserEntityRowMapper.instance.mapRow(rs, rs.getRow())
-          );
-        } else {
-          return Optional.empty();
+            try (ResultSet rs = ps.getResultSet()) {
+                if (rs.next()) {
+                    return Optional.of(
+                            AuthUserEntityRowMapper.instance.mapRow(rs, rs.getRow())
+                    );
+                } else {
+                    return Optional.empty();
+                }
+            }
+        } catch (SQLException e) {
+            throw new RuntimeException(e);
         }
-      }
-    } catch (SQLException e) {
-      throw new RuntimeException(e);
     }
-  }
 
-  @Nonnull
-  @Override
-  @SuppressWarnings("resource")
-  public Optional<AuthUserEntity> findByUsername(String username) {
-    try (PreparedStatement ps = holder(URL).connection().prepareStatement("SELECT * FROM \"user\" WHERE username = ?")) {
-      ps.setString(1, username);
+    @Step("Найти по имени")
+    @Nonnull
+    @Override
+    @SuppressWarnings("resource")
+    public Optional<AuthUserEntity> findByUsername(String username) {
+        try (PreparedStatement ps = holder(URL).connection().prepareStatement("SELECT * FROM \"user\" WHERE username = ?")) {
+            ps.setString(1, username);
 
-      ps.execute();
+            ps.execute();
 
-      try (ResultSet rs = ps.getResultSet()) {
+            try (ResultSet rs = ps.getResultSet()) {
 
-        if (rs.next()) {
-          return Optional.of(
-              AuthUserEntityRowMapper.instance.mapRow(rs, rs.getRow())
-          );
-        } else {
-          return Optional.empty();
+                if (rs.next()) {
+                    return Optional.of(
+                            AuthUserEntityRowMapper.instance.mapRow(rs, rs.getRow())
+                    );
+                } else {
+                    return Optional.empty();
+                }
+            }
+        } catch (SQLException e) {
+            throw new RuntimeException(e);
         }
-      }
-    } catch (SQLException e) {
-      throw new RuntimeException(e);
     }
-  }
 
-  @Nonnull
-  @Override
-  @SuppressWarnings("resource")
-  public List<AuthUserEntity> findAll() {
-    try (PreparedStatement ps = holder(URL).connection().prepareStatement(
-        "SELECT * FROM \"user\"")) {
-      ps.execute();
-      List<AuthUserEntity> result = new ArrayList<>();
-      try (ResultSet rs = ps.getResultSet()) {
-        while (rs.next()) {
-          AuthUserEntity ue = AuthUserEntityRowMapper.instance.mapRow(rs, rs.getRow());
-          result.add(ue);
+    @Step("Найти все")
+    @Nonnull
+    @Override
+    @SuppressWarnings("resource")
+    public List<AuthUserEntity> findAll() {
+        try (PreparedStatement ps = holder(URL).connection().prepareStatement(
+                "SELECT * FROM \"user\"")) {
+            ps.execute();
+            List<AuthUserEntity> result = new ArrayList<>();
+            try (ResultSet rs = ps.getResultSet()) {
+                while (rs.next()) {
+                    AuthUserEntity ue = AuthUserEntityRowMapper.instance.mapRow(rs, rs.getRow());
+                    result.add(ue);
+                }
+            }
+            return result;
+        } catch (SQLException e) {
+            throw new RuntimeException(e);
         }
-      }
-      return result;
-    } catch (SQLException e) {
-      throw new RuntimeException(e);
     }
-  }
 }

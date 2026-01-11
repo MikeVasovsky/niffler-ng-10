@@ -15,6 +15,7 @@ public class Calendar {
         this.dateInputFld = self.$("input[name='date']");
     }
 
+
     public Calendar setDateInCalendar(Date date) {
         dateInputFld.val(String.valueOf(date));
         return this;

@@ -6,6 +6,7 @@ import guru.qa.niffler.data.entity.auth.Authority;
 import guru.qa.niffler.data.entity.auth.AuthorityEntity;
 import guru.qa.niffler.data.mapper.AuthUserEntityRowMapper;
 import guru.qa.niffler.data.repository.AuthUserRepository;
+import io.qameta.allure.Step;
 
 import javax.annotation.Nonnull;
 import javax.annotation.ParametersAreNonnullByDefault;
@@ -24,6 +25,7 @@ public class AuthUserRepositoryJdbc implements AuthUserRepository {
   private static final Config CFG = Config.getInstance();
   private static final String URL = CFG.authJdbcUrl();
 
+  @Step("Найти юзера по имени")
   @Nonnull
   @Override
   public AuthUserEntity create(AuthUserEntity user) {
@@ -64,6 +66,7 @@ public class AuthUserRepositoryJdbc implements AuthUserRepository {
     }
   }
 
+  @Step("Найти юзера по id")
   @Nonnull
   @Override
   public Optional<AuthUserEntity> findById(UUID id) {
@@ -100,6 +103,7 @@ public class AuthUserRepositoryJdbc implements AuthUserRepository {
     }
   }
 
+  @Step("Найти юзера по имени")
   @Nonnull
   @Override
   public Optional<AuthUserEntity> findByUsername(String username) {

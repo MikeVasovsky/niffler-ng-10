@@ -6,6 +6,7 @@ import guru.qa.niffler.data.entity.userdata.FriendshipEntity;
 import guru.qa.niffler.data.entity.userdata.UserEntity;
 import guru.qa.niffler.data.mapper.UserdataUserEntityRowMapper;
 import guru.qa.niffler.model.CurrencyValues;
+import io.qameta.allure.Step;
 
 import javax.annotation.Nonnull;
 import javax.annotation.ParametersAreNonnullByDefault;
@@ -24,6 +25,7 @@ public class UserdataUserDaoJdbc implements UserdataUserDao {
   private static final Config CFG = Config.getInstance();
   private static final String URL = CFG.userdataJdbcUrl();
 
+  @Step("Создать пользователя")
   @Nonnull
   @Override
   @SuppressWarnings("resource")
@@ -49,6 +51,7 @@ public class UserdataUserDaoJdbc implements UserdataUserDao {
     }
   }
 
+  @Step("Найти пользователя по id")
   @Nonnull
   @Override
   @SuppressWarnings("resource")
@@ -71,6 +74,7 @@ public class UserdataUserDaoJdbc implements UserdataUserDao {
     }
   }
 
+  @Step("Найти пользователя по имени пользователя")
   @Nonnull
   @Override
   @SuppressWarnings("resource")
@@ -93,6 +97,7 @@ public class UserdataUserDaoJdbc implements UserdataUserDao {
     }
   }
 
+  @Step("Найти всех пользователей")
   @Nonnull
   @Override
   @SuppressWarnings("resource")
@@ -121,6 +126,7 @@ public class UserdataUserDaoJdbc implements UserdataUserDao {
     }
   }
 
+  @Step("Изменить пользователя")
   @Nonnull
   @Override
   @SuppressWarnings("resource")

@@ -11,6 +11,7 @@ import guru.qa.niffler.data.jdbc.DataSources;
 import guru.qa.niffler.data.mapper.CategoryEntityRowMapper;
 import guru.qa.niffler.data.mapper.SpendEntityRowMapper;
 import guru.qa.niffler.data.repository.SpendRepository;
+import io.qameta.allure.Step;
 import org.springframework.jdbc.core.JdbcTemplate;
 
 import javax.annotation.Nonnull;
@@ -26,6 +27,7 @@ public class SpendRepositorySpringJdbc implements SpendRepository {
   private final SpendDao spendDao = new SpendDaoSpringJdbc();
   private final CategoryDao categoryDao = new CategoryDaoSpringJdbc();
 
+  @Step("Создать трату")
   @Nonnull
   @Override
   public SpendEntity create(SpendEntity spend) {
@@ -38,6 +40,7 @@ public class SpendRepositorySpringJdbc implements SpendRepository {
     return spendDao.create(spend);
   }
 
+  @Step("Изменить трату")
   @Nonnull
   @Override
   public SpendEntity update(SpendEntity spend) {
@@ -46,24 +49,28 @@ public class SpendRepositorySpringJdbc implements SpendRepository {
     return spend;
   }
 
+  @Step("Создать категорию")
   @Nonnull
   @Override
   public CategoryEntity createCategory(CategoryEntity category) {
     return categoryDao.create(category);
   }
 
+  @Step("Изменить категорию")
   @Nonnull
   @Override
   public CategoryEntity updateCategory(CategoryEntity category) {
     return categoryDao.update(category);
   }
 
+  @Step("Найти категорию по id")
   @Nonnull
   @Override
   public Optional<CategoryEntity> findCategoryById(UUID id) {
     return categoryDao.findCategoryById(id);
   }
 
+  @Step("Найти категорию по имени и имени категории")
   @Nonnull
   @Override
   public Optional<CategoryEntity> findCategoryByUsernameAndCategoryName(String username, String name) {
@@ -78,12 +85,14 @@ public class SpendRepositorySpringJdbc implements SpendRepository {
     );
   }
 
+  @Step("Найти трату по id")
   @Nonnull
   @Override
   public Optional<SpendEntity> findById(UUID id) {
     return spendDao.findSpendById(id);
   }
 
+  @Step("Найти трату по имени и описанию")
   @Nonnull
   @Override
   public Optional<SpendEntity> findByUsernameAndSpendDescription(String username, String description) {
@@ -98,12 +107,14 @@ public class SpendRepositorySpringJdbc implements SpendRepository {
     );
   }
 
+  @Step("Удалить трату")
   @Override
   public void remove(SpendEntity spend) {
     JdbcTemplate jdbcTemplate = new JdbcTemplate(DataSources.dataSource(url));
     jdbcTemplate.update("DELETE FROM spend WHERE id = ?", spend.getId());
   }
 
+  @Step("Удалить категорию")
   @Override
   public void removeCategory(CategoryEntity category) {
     JdbcTemplate jdbcTemplate = new JdbcTemplate(DataSources.dataSource(url));

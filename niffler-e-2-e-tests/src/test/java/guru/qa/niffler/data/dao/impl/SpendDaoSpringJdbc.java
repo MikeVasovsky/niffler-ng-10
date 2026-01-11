@@ -5,6 +5,7 @@ import guru.qa.niffler.data.dao.SpendDao;
 import guru.qa.niffler.data.entity.spend.SpendEntity;
 import guru.qa.niffler.data.extractor.SpendEntityRowExtractor;
 import guru.qa.niffler.data.mapper.SpendEntityRowMapper;
+import io.qameta.allure.Step;
 import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.support.GeneratedKeyHolder;
@@ -27,6 +28,7 @@ public class SpendDaoSpringJdbc implements SpendDao {
   private static final Config CFG = Config.getInstance();
   private static final String URL = CFG.spendJdbcUrl();
 
+  @Step("Создать трату")
   @Nonnull
   @Override
   public SpendEntity create(SpendEntity spend) {
@@ -52,6 +54,7 @@ public class SpendDaoSpringJdbc implements SpendDao {
     return spend;
   }
 
+  @Step("Найти все траты")
   @Nonnull
   @Override
   public List<SpendEntity> findAll() {
@@ -62,6 +65,7 @@ public class SpendDaoSpringJdbc implements SpendDao {
     ));
   }
 
+  @Step("Найти все траты по имени пользователя")
   @Nonnull
   @Override
   public List<SpendEntity> findAllByUsername(String username) {
@@ -77,6 +81,7 @@ public class SpendDaoSpringJdbc implements SpendDao {
     }
   }
 
+  @Step("Найти все траты по id")
   @Nonnull
   @Override
   public Optional<SpendEntity> findSpendById(UUID id) {
@@ -94,6 +99,7 @@ public class SpendDaoSpringJdbc implements SpendDao {
     }
   }
 
+  @Step("Изменить трату")
   @Nonnull
   @Override
   public SpendEntity update(SpendEntity spend) {
@@ -115,6 +121,7 @@ public class SpendDaoSpringJdbc implements SpendDao {
     return spend;
   }
 
+  @Step("Удалить трату")
   @Override
   public void deleteSpend(SpendEntity spend) {
     JdbcTemplate jdbcTemplate = new JdbcTemplate(dataSource(URL));

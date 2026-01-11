@@ -1,6 +1,7 @@
 package guru.qa.niffler.page;
 
 import com.codeborne.selenide.SelenideElement;
+import io.qameta.allure.Step;
 
 import javax.annotation.Nonnull;
 import javax.annotation.ParametersAreNonnullByDefault;
@@ -17,12 +18,14 @@ public class PeoplePage {
     private final SelenideElement allTab = $("a[href='/people/all']");
     private final SelenideElement peopleTable = $("#all");
 
+    @Step("Проверить запрос в друзья")
     public PeoplePage checkInvitationSentToUser(String username) {
         SelenideElement friendRow = peopleTable.$$("tr").find(text(username));
         friendRow.shouldHave(text("Waiting..."));
         return this;
     }
 
+    @Step("Проверить наличие полей на странице")
     public PeoplePage checkThatPageLoaded() {
         peopleTab.shouldBe(visible);
         allTab.shouldBe(visible);

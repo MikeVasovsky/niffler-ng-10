@@ -4,6 +4,7 @@ import guru.qa.niffler.config.Config;
 import guru.qa.niffler.data.dao.AuthUserDao;
 import guru.qa.niffler.data.entity.auth.AuthUserEntity;
 import guru.qa.niffler.data.mapper.AuthUserEntityRowMapper;
+import io.qameta.allure.Step;
 import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.support.GeneratedKeyHolder;
@@ -24,6 +25,7 @@ public class AuthUserDaoSpringJdbc implements AuthUserDao {
     private static final Config CFG = Config.getInstance();
     private static final String URL = CFG.authJdbcUrl();
 
+    @Step("Создать пользователя")
     @Nonnull
     @Override
     public AuthUserEntity create(AuthUserEntity user) {
@@ -49,6 +51,7 @@ public class AuthUserDaoSpringJdbc implements AuthUserDao {
         return user;
     }
 
+    @Step("Найти по id")
     @Nonnull
     @Override
     public Optional<AuthUserEntity> findById(UUID id) {
@@ -66,6 +69,7 @@ public class AuthUserDaoSpringJdbc implements AuthUserDao {
         }
     }
 
+    @Step("Найти по имени")
     @Nonnull
     @Override
     public Optional<AuthUserEntity> findByUsername(String username) {
@@ -83,6 +87,7 @@ public class AuthUserDaoSpringJdbc implements AuthUserDao {
         }
     }
 
+    @Step("Найти все")
     @Nonnull
     @Override
     public List<AuthUserEntity> findAll() {

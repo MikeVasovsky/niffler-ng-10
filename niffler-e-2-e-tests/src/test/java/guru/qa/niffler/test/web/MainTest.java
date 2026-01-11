@@ -28,7 +28,7 @@ public class MainTest {
         Selenide.open(CFG.frontUrl(), LoginPage.class)
                 .successLogin(user.username(), user.testData().password())
                 .checkThatPageLoaded()
-                .checkSearch(user.testData().spendings().getFirst().category().name());
+                .search(user.testData().spendings().getFirst().category().name());
     }
 
     @User(
