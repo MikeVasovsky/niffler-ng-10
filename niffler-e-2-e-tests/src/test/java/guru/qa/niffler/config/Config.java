@@ -4,38 +4,38 @@ import javax.annotation.Nonnull;
 
 public interface Config {
 
-  @Nonnull
-  static Config getInstance() {
-    return LocalConfig.INSTANCE;
-  }
+    @Nonnull
+    static Config getInstance() {
+        return LocalConfig.INSTANCE;
+    }
 
-  @Nonnull
-  String frontUrl();
+    @Nonnull
+    String frontUrl();
 
-  @Nonnull
-  String authUrl();
+    @Nonnull
+    String authUrl();
 
-  @Nonnull
-  String authJdbcUrl();
+    @Nonnull
+    String authJdbcUrl();
 
-  @Nonnull
-  String gatewayUrl();
+    @Nonnull
+    String gatewayUrl();
 
-  @Nonnull
-  String userdataUrl();
+    @Nonnull
+    String userdataUrl();
 
-  @Nonnull
-  String userdataJdbcUrl();
+    @Nonnull
+    String userdataJdbcUrl();
 
-  @Nonnull
-  String spendUrl();
+    @Nonnull
+    String spendUrl();
 
-  @Nonnull
-  String spendJdbcUrl();
+    @Nonnull
+    String spendJdbcUrl();
 
-  @Nonnull
-  String currencyJdbcUrl();
+    @Nonnull
+    String currencyJdbcUrl();
 
-  @Nonnull
-  String githubUrl();
+    @Nonnull
+    String githubUrl();
 }
