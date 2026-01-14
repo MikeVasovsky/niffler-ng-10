@@ -10,6 +10,8 @@ import jakarta.persistence.NoResultException;
 import java.util.Optional;
 import java.util.UUID;
 
+import static guru.qa.niffler.data.entity.userdata.FriendshipStatus.ACCEPTED;
+import static guru.qa.niffler.data.entity.userdata.FriendshipStatus.PENDING;
 import static guru.qa.niffler.data.jpa.EntityManagers.em;
 
 public class UserdataUserRepositoryHibernate implements UserdataUserRepository {
@@ -26,15 +28,9 @@ public class UserdataUserRepositoryHibernate implements UserdataUserRepository {
   }
 
   @Override
-  public UserEntity update(UserEntity user) {
-    entityManager.joinTransaction();
-    return entityManager.merge(user);
-  }
-
-  @Override
   public Optional<UserEntity> findById(UUID id) {
     return Optional.ofNullable(
-        entityManager.find(UserEntity.class, id)
+            entityManager.find(UserEntity.class, id)
     );
   }
 
@@ -42,9 +38,9 @@ public class UserdataUserRepositoryHibernate implements UserdataUserRepository {
   public Optional<UserEntity> findByUsername(String username) {
     try {
       return Optional.of(
-          entityManager.createQuery("select u from UserEntity u where u.username =: username", UserEntity.class)
-              .setParameter("username", username)
-              .getSingleResult()
+              entityManager.createQuery("select u from UserEntity u where u.username =: username", UserEntity.class)
+                      .setParameter("username", username)
+                      .getSingleResult()
       );
     } catch (NoResultException e) {
       return Optional.empty();
@@ -52,15 +48,27 @@ public class UserdataUserRepositoryHibernate implements UserdataUserRepository {
   }
 
   @Override
-  public void addFriendshipRequest(UserEntity requester, UserEntity addressee) {
+  public UserEntity update(UserEntity user) {
+    return entityManager.merge(user);
+  }
+
+  @Override
+  public void sendInvitation(UserEntity requester, UserEntity addressee) {
     entityManager.joinTransaction();
-    requester.addFriends(FriendshipStatus.PENDING, addressee);
+    addressee.addFriends(PENDING, requester);
+  }
+
+  @Override
+  public void remove(UserEntity user) {
+    UserEntity findUser = entityManager
+            .find(UserEntity.class, user.getId());
+    entityManager.remove(findUser);
   }
 
   @Override
   public void addFriend(UserEntity requester, UserEntity addressee) {
     entityManager.joinTransaction();
-    requester.addFriends(FriendshipStatus.ACCEPTED, addressee);
-    addressee.addFriends(FriendshipStatus.ACCEPTED, requester);
+    requester.addFriends(ACCEPTED, addressee);
+    addressee.addFriends(ACCEPTED, requester);
   }
 }

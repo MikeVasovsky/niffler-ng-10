@@ -2,39 +2,23 @@ package guru.qa.niffler.service;
 
 import guru.qa.niffler.model.UserJson;
 
+import javax.annotation.Nonnull;
+import javax.annotation.ParametersAreNonnullByDefault;
+import java.io.IOException;
 import java.util.List;
-import java.util.UUID;
 
+@ParametersAreNonnullByDefault
 public interface UsersClient {
 
-
+    @Nonnull
     UserJson createUser(String username, String password);
 
-    List<UserJson> addIncomeInvitation(UserJson targetUser, int count);
+    @Nonnull
+    List<UserJson> addIncomeInvitation(UserJson targetUser, int count) throws IOException;
 
+    @Nonnull
     List<UserJson> addOutcomeInvitation(UserJson targetUser, int count);
 
+    @Nonnull
     List<UserJson> addFriend(UserJson targetUser, int count);
-
-    UserJson findById(UUID id);
-
-    List<UserJson> findAllUsers(String username, String searchQuery);
-
-    UserJson findByUsername(String username);
-
-    UserJson update(UserJson user);
-
-    void sendInvitation(UserJson targetUser, int count);
-
-    UserJson sendInvitation(String username, String targetUser);
-
-    UserJson acceptInvitation(String username, String targetUser);
-
-    void remove(UserJson user);
-
-    UserJson declineInvitation(String username, String targetUsername);
-
-    List<UserJson> getAllFriends(String username, String searchQuery);
-
-    void removeFriends(String username, String targetUsername);
 }

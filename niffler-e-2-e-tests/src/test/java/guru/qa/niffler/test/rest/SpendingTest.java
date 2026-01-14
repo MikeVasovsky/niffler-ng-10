@@ -60,23 +60,40 @@ public class SpendingTest {
         System.out.println(categories);
     }
 
-    //C данным тестом возникла проблема - получаю на выходе пустой список
+    @User(spendings = {
+            @Spending(
+                    description = "desc1",
+                    amount = 99.00,
+                    currency = CurrencyValues.RUB,
+                    category = "food"
+            ),
+            @Spending(
+                    description = "desc2",
+                    amount = 149.50,
+                    currency = CurrencyValues.USD,
+                    category = "transport"
+            ),
+            @Spending(
+                    description = "desc3",
+                    amount = 2000.00,
+                    currency = CurrencyValues.RUB,
+                    category = "entertainment"
+            )
+    })
     @Test
-    void testGetAll() {
+    void testGetAll(UserJson user) {
         List<SpendJson> allSpends = spendApiClient.allSpends(
-                "cat1",
+                user.username(),
                 null,
                 null,
                 null
         );
-
         System.out.println(allSpends);
     }
 
-    //C данным тестом возникла проблема - получаю ответ 404
     @User(
             spendings =
-            @Spending(description = "test6_3", amount = 0.0, category = "")
+            @Spending(description = "test6_3", amount = 2000.0, category = "")
     )
     @Test
     void testEditSpend(UserJson user) {
@@ -87,11 +104,12 @@ public class SpendingTest {
                 createSpend.category(),
                 CurrencyValues.RUB,
                 10000.00,
-                "desc_6-3",
-                "update_6.3_Username"
+                "desc_6-3-1",
+                user.username()
         );
         spendApiClient.editSpend(updateSpend);
-        assertEquals("update_6.3_Username", updateSpend.username());
+        assertNotEquals(createSpend.amount(), updateSpend.amount());
+        assertNotEquals(createSpend.description(), updateSpend.description());
     }
 
     @User(spendings =

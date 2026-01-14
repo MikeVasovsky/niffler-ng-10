@@ -15,19 +15,25 @@ public class UserdataTest {
 
     private final UsersApiClient usersApiClient = new UsersApiClient();
 
+    @User
+    @Test
+    void createUser(UserJson user) {
+        UserJson userJson = usersApiClient.createUser(user.username(), user.testData().password());
+        System.out.println(userJson.username());
+    }
 
     @User
     @Test
-    void currentUserTest(UserJson user){
+    void currentUserTest(UserJson user) {
         UserJson userJson = usersApiClient.findByUsername(user.username());
         assertEquals(user.username(), userJson.username());
     }
 
     @Test
-    void allUsersTest(){
+    void allUsersTest() {
         String username = "user_2_friendship";
         List<UserJson> result = usersApiClient.findAllUsers(username, "hren_s_gor");
-        for(UserJson user: result){
+        for (UserJson user : result) {
             System.out.println(user);
         }
     }
@@ -49,18 +55,15 @@ public class UserdataTest {
         usersApiClient.update(userJson);
     }
 
+    @User
     @Test
-    void testSendInvitation(){
-        UserJson user = usersApiClient.findByUsername("detra.weissnat");
-        UserJson target = usersApiClient.findByUsername("marcos.murazik");
-        usersApiClient.sendInvitation(user.username(), target.username());
+    void testSendInvitation(UserJson user) {
+        usersApiClient.addIncomeInvitation(user, 1);
     }
 
     @User
     @Test
-    void acceptFriendshipReq(UserJson userSend){
-        UserJson newUser2 = usersApiClient.findByUsername(RandomDataUtils.randomUsername());
-        usersApiClient.sendInvitation(userSend.username(),newUser2.username());
-        usersApiClient.acceptInvitation(newUser2.username(), userSend.username());
+    void acceptFriendshipReq(UserJson userSend) {
+        usersApiClient.addFriend(userSend, 1);
     }
 }

@@ -13,6 +13,7 @@ import org.junit.jupiter.api.extension.ParameterResolutionException;
 import org.junit.jupiter.api.extension.ParameterResolver;
 import org.junit.platform.commons.support.AnnotationSupport;
 
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
@@ -33,8 +34,13 @@ public class UserExtension implements BeforeEachCallback, ParameterResolver {
               if ("".equals(userAnno.username())) {
                 final String username = RandomDataUtils.randomUsername();
                 final UserJson user = usersClient.createUser(username, DEFAULT_PASSWORD);
-                final List<UserJson> incomeInvitations = usersClient.addIncomeInvitation(user, userAnno.incomeInvitations());
-                final List<UserJson> outcomeInvitations = usersClient.addOutcomeInvitation(user, userAnno.outcomeInvitations());
+                  final List<UserJson> incomeInvitations;
+                  try {
+                      incomeInvitations = usersClient.addIncomeInvitation(user, userAnno.incomeInvitations());
+                  } catch (IOException e) {
+                    throw new RuntimeException(e);
+                  }
+                  final List<UserJson> outcomeInvitations = usersClient.addOutcomeInvitation(user, userAnno.outcomeInvitations());
                 final List<UserJson> friends = usersClient.addFriend(user, userAnno.friends());
 
                 final TestData testData = new TestData(

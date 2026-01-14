@@ -33,7 +33,7 @@ public class UsersDbClient implements UsersClient {
     private final AuthUserRepository authUserRepository = new AuthUserRepositoryHibernate();
     private final UserdataUserRepository userdataUserRepository = new UserdataUserRepositoryHibernate();
 
-    private final String password = "12345";
+    private final String PWD = "12345";
 
     private final TransactionTemplate txTemplate = new TransactionTemplate(
             new JdbcTransactionManager(
@@ -70,10 +70,10 @@ public class UsersDbClient implements UsersClient {
             for (int i = 0; i < count; i++) {
                 xaTransactionTemplate.execute(() -> {
                             String username = randomUsername();
-                            AuthUserEntity authUser = authUserEntity(username, "12345");
+                            AuthUserEntity authUser = authUserEntity(username, PWD);
                             authUserRepository.create(authUser);
                             UserEntity adressee = userdataUserRepository.create(userEntity(username));
-                            userdataUserRepository.addFriendshipRequest(adressee, targetEntity);
+                            userdataUserRepository.sendInvitation(adressee, targetEntity);
                             result.add(fromEntity(adressee, FriendshipStatus.INVITE_RECEIVED));
                             return null;
                         }
@@ -94,10 +94,10 @@ public class UsersDbClient implements UsersClient {
             for (int i = 0; i < count; i++) {
                 xaTransactionTemplate.execute(() -> {
                             String username = randomUsername();
-                            AuthUserEntity authUser = authUserEntity(username, "12345");
+                            AuthUserEntity authUser = authUserEntity(username, PWD);
                             authUserRepository.create(authUser);
                             UserEntity adressee = userdataUserRepository.create(userEntity(username));
-                            userdataUserRepository.addFriendshipRequest(targetEntity, adressee);
+                            userdataUserRepository.sendInvitation(targetEntity, adressee);
                             result.add(fromEntity(adressee, FriendshipStatus.INVITE_SENT));
                             return null;
                         }
@@ -118,7 +118,7 @@ public class UsersDbClient implements UsersClient {
             for (int i = 0; i < count; i++) {
                 xaTransactionTemplate.execute(() -> {
                             String username = randomUsername();
-                            AuthUserEntity authUser = authUserEntity(username, "12345");
+                            AuthUserEntity authUser = authUserEntity(username, PWD);
                             authUserRepository.create(authUser);
                             UserEntity adressee = userdataUserRepository.create(userEntity(username));
                             userdataUserRepository.addFriend(targetEntity, adressee);
@@ -131,91 +131,25 @@ public class UsersDbClient implements UsersClient {
         return result;
     }
 
-    @Override
     public UserJson findById(UUID id) {
         Optional<UserEntity> userEntity = userdataUserRepository.findById(id);
         return fromEntity(userEntity.get(), null);
 
     }
 
-    @Override
-    public List<UserJson> findAllUsers(String username, String searchQuery) {
-        throw new UnsupportedOperationException("Метод из апи интерфейса");
-    }
-
-    @Override
     public UserJson findByUsername(String username) {
         Optional<UserEntity> userEntity = userdataUserRepository.findByUsername(username);
         return fromEntity(userEntity.get(), null);
 
     }
 
-    @Override
     public UserJson update(UserJson user) {
         UserEntity us = UserEntity.fromJson(user);
-        UserEntity resEn =  xaTransactionTemplate.execute(() ->
+        UserEntity resEn = xaTransactionTemplate.execute(() ->
                 userdataUserRepository.update(us)
         );
-        return UserJson.fromEntity(resEn,null);
+        return UserJson.fromEntity(resEn, null);
 
-    }
-
-    @Override
-    public void sendInvitation(UserJson targetUser, int count) {
-        xaTransactionTemplate.execute(() -> {
-            if (count > 0) {
-                UserEntity targetEntity = userdataUserRepository.findById(
-                        targetUser.id()
-                ).orElseThrow();
-
-                for (int i = 0; i < count; i++) {
-                    String username = randomUsername();
-                    AuthUserEntity authUser = authUserEntity(username, password);
-                    authUserRepository.create(authUser);
-                    UserEntity adressee = userdataUserRepository.create(userEntity(username));
-                    userdataUserRepository.sendInvitation(targetEntity, adressee);
-                }
-            }
-            return null;
-        });
-
-    }
-
-    @Override
-    public UserJson sendInvitation(String username, String targetUser) {
-        throw new UnsupportedOperationException("Метод из апи интерфейса");
-    }
-
-    @Override
-    public UserJson acceptInvitation(String username, String targetUser) {
-        throw new UnsupportedOperationException("Метод из апи интерфейса");
-
-    }
-
-    @Override
-    public void remove(UserJson user) {
-        UserEntity uEn = UserEntity.fromJson(user);
-        xaTransactionTemplate.execute(()-> {
-            userdataUserRepository.remove(uEn);
-            return null;
-        });
-
-    }
-
-    @Override
-    public UserJson declineInvitation(String username, String targetUsername) {
-        throw new UnsupportedOperationException("Метод из апи интерфейса");
-
-    }
-
-    @Override
-    public List<UserJson> getAllFriends(String username, String searchQuery) {
-        throw new UnsupportedOperationException("Метод из апи интерфейса");
-    }
-
-    @Override
-    public void removeFriends(String username, String targetUsername) {
-        throw new UnsupportedOperationException("Метод из апи интерфейса");
     }
 
     private UserEntity userEntity(String username) {

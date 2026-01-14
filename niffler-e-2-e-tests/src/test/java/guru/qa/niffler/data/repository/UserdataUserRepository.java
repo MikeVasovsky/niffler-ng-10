@@ -8,14 +8,15 @@ import java.util.UUID;
 public interface UserdataUserRepository {
   UserEntity create(UserEntity user);
 
-  UserEntity update(UserEntity user);
-
   Optional<UserEntity> findById(UUID id);
 
   Optional<UserEntity> findByUsername(String username);
 
-  void addFriendshipRequest(UserEntity requester, UserEntity addressee);
+  UserEntity update(UserEntity user);
+
+  void sendInvitation(UserEntity requester, UserEntity addressee);
 
   void addFriend(UserEntity requester, UserEntity addressee);
 
+  void remove(UserEntity user);
 }

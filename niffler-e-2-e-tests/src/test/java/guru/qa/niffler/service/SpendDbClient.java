@@ -41,8 +41,11 @@ public class SpendDbClient implements SpendClient {
 
     @Override
     public SpendJson editSpend(SpendJson spend) {
-        throw new UnsupportedOperationException("Метод из апи интерфейса");
-
+        SpendEntity sp = SpendEntity.fromJson(spend);
+        SpendEntity resultEn =  xaTransactionTemplate.execute(() ->
+                spendRepository.update(sp)
+        );
+        return SpendJson.fromEntity(resultEn);
     }
 
     @Override

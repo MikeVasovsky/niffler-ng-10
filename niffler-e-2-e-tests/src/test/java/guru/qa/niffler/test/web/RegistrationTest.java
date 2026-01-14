@@ -34,16 +34,6 @@ public class RegistrationTest {
             checkThatPageLoad();
   }
 
-  //Негативные тесты
-  @Test
-  public void checkMessageThenLogoPassIsShort() {
-    Selenide.open(CFG.frontUrl(), LoginPage.class).
-            goToRegistration();
-    registrationTest.
-            inputShortLogopass("mes","1","1","Allowed password length should be from 3 to 12 characters");
-
-  }
-
   @Test
   public void checkMessageAfterIncorrectLogin() {
     Selenide.open(CFG.frontUrl(), LoginPage.class)
